@@ -1,4 +1,3 @@
-// app/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -175,7 +174,7 @@ export default function ComingSoon() {
             animate={{ scale: 1 }}
             transition={{ type: 'spring', stiffness: 300 }}
           >
-            <p className="text-2xl text-primary">We're live!</p>
+            <p className="text-2xl text-primary">We are live!</p>
           </motion.div>
         )}
 

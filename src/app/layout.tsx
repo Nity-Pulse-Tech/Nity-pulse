@@ -1,21 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({
-  variable: "--font-sans",
-  subsets: ["latin"],
-});
-
-const poppins = Poppins({
-  variable: "--font-heading",
-  subsets: ["latin"],
-  weight: ["400", "700"],
-});
 
 export const metadata: Metadata = {
   title: "NITY PULSE",
-  description: "Innovative technology and design solutions for collaborative teams and startups",
+  description:
+    "Innovative technology and design solutions for collaborative teams and startups",
 };
 
 export default function RootLayout({
@@ -25,9 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.variable} ${poppins.variable} antialiased`}
-      >
+      <body className="antialiased">
         {children}
       </body>
     </html>
