@@ -132,10 +132,10 @@ export default function ComingSoon() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="max-w-2xl mx-auto backdrop-blur-sm bg-white/80 dark:bg-black/80 p-8 rounded-xl border border-border shadow-2xl"
+        className="w-full max-w-2xl mx-auto backdrop-blur-sm bg-white/80 dark:bg-black/80 p-4 sm:p-8 rounded-xl border border-border shadow-2xl"
       >
         <motion.h1 
-          className="text-5xl md:text-6xl font-bold mb-8 text-gray-900 dark:text-white font-heading"
+          className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 sm:mb-8 text-gray-900 dark:text-white font-heading"
           animate={titleControls}
           initial={{ y: -10, opacity: 0 }}
           style={{
@@ -146,7 +146,7 @@ export default function ComingSoon() {
         </motion.h1>
         
         {!timeLeft.expired ? (
-          <div className="grid grid-cols-4 gap-4 mb-12">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-8 sm:mb-12">
             {[
               { value: timeLeft.days, label: 'Days' },
               { value: timeLeft.hours, label: 'Hours' },
@@ -155,13 +155,13 @@ export default function ComingSoon() {
             ].map((item, index) => (
               <motion.div 
                 key={index}
-                className="countdown-item flex flex-col items-center"
+                className="countdown-item flex flex-col items-center p-2"
                 whileHover={{ scale: 1.05 }}
               >
-                <span className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-primary">
+                <span className="text-3xl sm:text-4xl md:text-6xl font-bold text-gray-900 dark:text-primary">
                   {formatNumber(item.value)}
                 </span>
-                <span className="text-sm uppercase text-gray-600 dark:text-muted-foreground mt-2">
+                <span className="text-xs sm:text-sm uppercase text-gray-600 dark:text-muted-foreground mt-1 sm:mt-2">
                   {item.label}
                 </span>
               </motion.div>
@@ -169,24 +169,24 @@ export default function ComingSoon() {
           </div>
         ) : (
           <motion.div 
-            className="mb-12"
+            className="mb-8 sm:mb-12"
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
             transition={{ type: 'spring', stiffness: 300 }}
           >
-            <p className="text-2xl text-primary">We are live!</p>
+            <p className="text-xl sm:text-2xl text-primary">We are live!</p>
           </motion.div>
         )}
 
         <motion.p 
-          className="subtitle text-xl mb-8 text-gray-800 dark:text-gray-200"
+          className="subtitle text-lg sm:text-xl mb-6 sm:mb-8 text-gray-800 dark:text-gray-200 px-2 sm:px-0"
           whileHover={{ scale: 1.01 }}
         >
           Our Team at <span className="font-bold text-primary">Nity Pulse</span> Have Been Working On Something Amazing. We Will Be Back Soon.
         </motion.p>
 
         <motion.form 
-          className="flex flex-col sm:flex-row gap-4 mb-12"
+          className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-12 w-full"
           whileInView={{ opacity: 1, y: 0 }}
           initial={{ opacity: 0, y: 20 }}
           transition={{ delay: 0.6 }}
@@ -194,13 +194,13 @@ export default function ComingSoon() {
           <motion.input 
             type="email" 
             placeholder="Enter Your Email" 
-            className="form-element flex-1 px-4 py-3 rounded-md border border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-primary focus:outline-none shadow-sm"
+            className="form-element flex-1 px-4 py-2 sm:py-3 rounded-md border border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-primary focus:outline-none shadow-sm text-sm sm:text-base"
             required
             whileFocus={{ scale: 1.02 }}
           />
           <motion.button 
             type="submit" 
-            className="form-element px-8 py-3 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors font-heading font-bold shadow-lg"
+            className="form-element px-6 sm:px-8 py-2 sm:py-3 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors font-heading font-bold shadow-lg text-sm sm:text-base"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -209,7 +209,7 @@ export default function ComingSoon() {
         </motion.form>
 
         <motion.div 
-          className="flex justify-center gap-6 mb-8"
+          className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-6 sm:mb-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
@@ -218,7 +218,7 @@ export default function ComingSoon() {
             <motion.a 
               key={index}
               href="#"
-              className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
+              className="text-sm sm:text-base text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
               whileHover={{ y: -3 }}
             >
               {social}
@@ -227,7 +227,7 @@ export default function ComingSoon() {
         </motion.div>
 
         <motion.p 
-          className="text-sm text-gray-600 dark:text-muted-foreground"
+          className="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
