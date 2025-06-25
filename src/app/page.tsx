@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { motion, useAnimation } from 'framer-motion';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import { subscribeToNewsletter } from '@/services/newsletterService'; 
+import { NewsletterSubscriber } from '@/types/newsletter'; 
 
 // Initialize GSAP
 if (typeof window !== 'undefined') {
@@ -15,11 +17,9 @@ export default function ComingSoon() {
   const [targetDate] = useState<Date>(() => {
     const launchDate = process.env.NEXT_PUBLIC_LAUNCH_DATE || '';
     if (launchDate) {
-      // Convert to Cameroon time (WAT - UTC+1)
       const date = new Date(launchDate);
-      return new Date(date.getTime() + 60 * 60 * 1000); // Add 1 hour for WAT
+      return new Date(date.getTime() + 60 * 60 * 1000); 
     }
-    // Default to 2 weeks from now if no env var
     return new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
   });
 
@@ -28,8 +28,14 @@ export default function ComingSoon() {
     hours: 0,
     minutes: 0,
     seconds: 0,
-    expired: false
+    expired: false,
   });
+
+  // Form state
+  const [email, setEmail] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [successMessage, setSuccessMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   const titleControls = useAnimation();
 
@@ -39,19 +45,19 @@ export default function ComingSoon() {
       while (true) {
         await titleControls.start({
           y: [-3, 3, -3],
-          transition: { duration: 6, ease: 'easeInOut' }
+          transition: { duration: 6, ease: 'easeInOut' },
         });
         await titleControls.start({
           scale: [1, 1.02, 1],
-          transition: { duration: 4, ease: 'easeInOut' }
+          transition: { duration: 4, ease: 'easeInOut' },
         });
         await titleControls.start({
           textShadow: [
             '0 0 8px rgba(0,0,0,0.1)',
             '0 0 15px rgba(0,0,0,0.2)',
-            '0 0 8px rgba(0,0,0,0.1)'
+            '0 0 8px rgba(0,0,0,0.1)',
           ],
-          transition: { duration: 5, ease: 'easeInOut' }
+          transition: { duration: 5, ease: 'easeInOut' },
         });
       }
     };
@@ -65,14 +71,14 @@ export default function ComingSoon() {
       opacity: 0,
       stagger: 0.1,
       duration: 0.8,
-      ease: 'back.out'
+      ease: 'back.out',
     });
 
     gsap.from('.subtitle', {
       y: 20,
       opacity: 0,
       duration: 0.8,
-      delay: 0.4
+      delay: 0.4,
     });
 
     gsap.from('.form-element', {
@@ -80,7 +86,7 @@ export default function ComingSoon() {
       opacity: 0,
       duration: 0.8,
       delay: 0.6,
-      stagger: 0.1
+      stagger: 0.1,
     });
   });
 
@@ -93,7 +99,7 @@ export default function ComingSoon() {
         hours: 0,
         minutes: 0,
         seconds: 0,
-        expired: false
+        expired: false,
       };
 
       if (difference > 0) {
@@ -102,7 +108,7 @@ export default function ComingSoon() {
           hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
           minutes: Math.floor((difference / 1000 / 60) % 60),
           seconds: Math.floor((difference / 1000) % 60),
-          expired: false
+          expired: false,
         };
       } else {
         timeLeft.expired = true;
@@ -112,7 +118,7 @@ export default function ComingSoon() {
     };
 
     setTimeLeft(calculateTimeLeft());
-    
+
     const timer = setInterval(() => {
       setTimeLeft(calculateTimeLeft());
     }, 1000);
@@ -123,37 +129,60 @@ export default function ComingSoon() {
   // Format numbers with leading zero
   const formatNumber = (num: number) => num.toString().padStart(2, '0');
 
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      setErrorMessage('Please enter a valid email address.');
+      return;
+    }
+
+    setIsLoading(true);
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    try {
+      const response: NewsletterSubscriber = await subscribeToNewsletter(email);
+      setSuccessMessage('Successfully subscribed! Thank you for joining our newsletter.');
+      setEmail(''); // Clear the input
+    } catch (error: any) {
+      setErrorMessage(error.response?.data?.message || 'Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div 
+    <div
       className="min-h-screen flex flex-col items-center justify-center p-4 text-center bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: "url('/bg.png')" }}
     >
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
         className="w-full max-w-2xl mx-auto backdrop-blur-sm bg-white/80 dark:bg-black/80 p-4 sm:p-8 rounded-xl border border-border shadow-2xl"
       >
-        <motion.h1 
+        <motion.h1
           className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 sm:mb-8 text-gray-900 dark:text-white font-heading"
           animate={titleControls}
           initial={{ y: -10, opacity: 0 }}
           style={{
-            textShadow: '0 2px 10px rgba(0,0,0,0.1)'
+            textShadow: '0 2px 10px rgba(0,0,0,0.1)',
           }}
         >
           COMING SOON
         </motion.h1>
-        
+
         {!timeLeft.expired ? (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-8 sm:mb-12">
             {[
               { value: timeLeft.days, label: 'Days' },
               { value: timeLeft.hours, label: 'Hours' },
               { value: timeLeft.minutes, label: 'Minutes' },
-              { value: timeLeft.seconds, label: 'Seconds' }
+              { value: timeLeft.seconds, label: 'Seconds' },
             ].map((item, index) => (
-              <motion.div 
+              <motion.div
                 key={index}
                 className="countdown-item flex flex-col items-center p-2"
                 whileHover={{ scale: 1.05 }}
@@ -168,7 +197,7 @@ export default function ComingSoon() {
             ))}
           </div>
         ) : (
-          <motion.div 
+          <motion.div
             className="mb-8 sm:mb-12"
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
@@ -178,44 +207,71 @@ export default function ComingSoon() {
           </motion.div>
         )}
 
-        <motion.p 
+        <motion.p
           className="subtitle text-lg sm:text-xl mb-6 sm:mb-8 text-gray-800 dark:text-gray-200 px-2 sm:px-0"
           whileHover={{ scale: 1.01 }}
         >
           Our Team at <span className="font-bold text-primary">Nity Pulse</span> Have Been Working On Something Amazing. We Will Be Back Soon.
         </motion.p>
 
-        <motion.form 
+        <motion.form
           className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-12 w-full"
           whileInView={{ opacity: 1, y: 0 }}
           initial={{ opacity: 0, y: 20 }}
           transition={{ delay: 0.6 }}
+          onSubmit={handleSubmit} // Add submit handler
         >
-          <motion.input 
-            type="email" 
-            placeholder="Enter Your Email" 
+          <motion.input
+            type="email"
+            placeholder="Enter Your Email"
             className="form-element flex-1 px-4 py-2 sm:py-3 rounded-md border border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-primary focus:outline-none shadow-sm text-sm sm:text-base"
             required
             whileFocus={{ scale: 1.02 }}
+            value={email} // Bind input to state
+            onChange={(e) => setEmail(e.target.value)} // Update state on change
+            disabled={isLoading} // Disable during loading
           />
-          <motion.button 
-            type="submit" 
+          <motion.button
+            type="submit"
             className="form-element px-6 sm:px-8 py-2 sm:py-3 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors font-heading font-bold shadow-lg text-sm sm:text-base"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            disabled={isLoading} // Disable during loading
           >
-            Submit →
+            {isLoading ? 'Submitting...' : 'Submit →'}
           </motion.button>
         </motion.form>
 
-        <motion.div 
+        {/* Feedback Messages */}
+        {successMessage && (
+          <motion.p
+            className="text-sm text-green-600 mb-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            {successMessage}
+          </motion.p>
+        )}
+        {errorMessage && (
+          <motion.p
+            className="text-sm text-red-600 mb-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            {errorMessage}
+          </motion.p>
+        )}
+
+        <motion.div
           className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-6 sm:mb-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
         >
           {['Instagram', 'Whatsapp', 'LinkedIn', 'Dribbble'].map((social, index) => (
-            <motion.a 
+            <motion.a
               key={index}
               href="#"
               className="text-sm sm:text-base text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors"
@@ -226,7 +282,7 @@ export default function ComingSoon() {
           ))}
         </motion.div>
 
-        <motion.p 
+        <motion.p
           className="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
