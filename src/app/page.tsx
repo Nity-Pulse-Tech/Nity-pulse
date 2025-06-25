@@ -7,7 +7,7 @@ import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { toast } from 'sonner';
 import { subscribeToNewsletter } from '@/services/newsletterService';
-import { NewsletterSubscriber } from '@/types/newsletter';
+import { AxiosError } from 'axios';
 
 // Initialize GSAP
 if (typeof window !== 'undefined') {
@@ -15,12 +15,12 @@ if (typeof window !== 'undefined') {
 }
 
 export default function ComingSoon() {
-  // Get launch date from environment variable (in Cameroon timezone)
+  // Get launch date from environment variable (in Cameroon timezone, WAT)
   const [targetDate] = useState<Date>(() => {
     const launchDate = process.env.NEXT_PUBLIC_LAUNCH_DATE || '';
     if (launchDate) {
       const date = new Date(launchDate);
-      return new Date(date.getTime() + 60 * 60 * 1000);
+      return new Date(date.getTime() + 60 * 60 * 1000); // Adjust for WAT (+1 hour)
     }
     return new Date(Date.now() + 14 * 24 * 60 * 60 * 1000); // Default: 14 days
   });
@@ -146,7 +146,7 @@ export default function ComingSoon() {
 
     setIsLoading(true);
     try {
-      const response: NewsletterSubscriber = await subscribeToNewsletter(email);
+      await subscribeToNewsletter(email);
       setEmail('');
       toast.success('Successfully subscribed! We’ll notify you when Nity Pulse is live.', {
         duration: 5000,
@@ -157,8 +157,13 @@ export default function ComingSoon() {
           fontFamily: 'Inter, sans-serif',
         },
       });
-    } catch (error: any) {
-      const errorMsg = error.response?.data?.message || 'An error occurred. Please try again.';
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message?: string; email?: string[] }>;
+      const errorMsg =
+        axiosError.response?.data?.message ||
+        axiosError.response?.data?.email?.[0] ||
+        'An error occurred. Please try again.';
+    
       toast.error(errorMsg, {
         duration: 5000,
         style: {
