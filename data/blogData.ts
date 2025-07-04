@@ -1,0 +1,32 @@
+export const blogPosts = [
+    {
+      id: '1',
+      title: 'Building Collaborative Tech for Startups',
+      excerpt: 'How Nity Pulse empowers startups with tailored technology solutions.',
+      content: 'At Nity Pulse, we believe collaboration is key to innovation. Our approach to building tech for startups involves close partnerships, agile development, and a focus on user-centric design...',
+      author: 'Aminata Diop',
+      publishDate: '2025-06-15',
+      readTime: '5 min read',
+      category: 'Startups',
+    },
+    {
+      id: '2',
+      title: 'The Future of AI in African Tech',
+      excerpt: 'Exploring how AI is transforming industries across Africa.',
+      content: 'Artificial Intelligence is reshaping the African tech landscape, from healthcare to education. At Nity Pulse, we’re leveraging AI to create smarter, more inclusive solutions...',
+      author: 'Kwame Nkrumah',
+      publishDate: '2025-05-20',
+      readTime: '7 min read',
+      category: 'Artificial Intelligence',
+    },
+    {
+      id: '3',
+      title: 'Designing User-Centric Mobile Apps',
+      excerpt: 'Key principles for creating apps that users love.',
+      content: 'User-centric design is at the heart of our mobile app development process. We prioritize intuitive interfaces, seamless performance, and accessibility to ensure every app delivers value...',
+      author: 'Fatima Zohra',
+      publishDate: '2025-04-10',
+      readTime: '6 min read',
+      category: 'Mobile Apps',
+    },
+  ];
