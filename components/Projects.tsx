@@ -2,7 +2,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Smartphone, Utensils, Globe, Briefcase, Shield } from 'lucide-react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
 
 const Projects = () => {
   const projects = [
@@ -49,22 +48,9 @@ const Projects = () => {
   ];
 
   return (
-    <motion.section
-      id="projects"
-      className="py-24 bg-background relative overflow-hidden"
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.6 }}
-    >
+    <section id="projects" className="py-24 bg-background relative overflow-hidden">
       <div className="container mx-auto px-6 relative z-10">
-        <motion.div
-          className="text-center mb-20"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
+        <div className="text-center mb-20">
           <div className="inline-flex items-center bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
             <Smartphone size={16} className="mr-2 text-black/60 dark:text-white/60" />
             <span className="text-black dark:text-white">Our Creations</span>
@@ -75,25 +61,13 @@ const Projects = () => {
           <p className="text-xl text-black/60 dark:text-white/60 max-w-3xl mx-auto">
             Discover our portfolio of collaborative tech solutions transforming industries and empowering users.
           </p>
-        </motion.div>
+        </div>
 
-        <motion.div
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map((project, index) => {
             const IconComponent = project.icon;
             return (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
+              <div key={index}>
                 <Card className="group card hover:shadow-2xl transition-all duration-500 hover:scale-105">
                   <div className="relative overflow-hidden">
                     <Image 
@@ -122,12 +96,12 @@ const Projects = () => {
                     </p>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </div>
             );
           })}
-        </motion.div>
+        </div>
       </div>
-    </motion.section>
+    </section>
   );
 };
 
