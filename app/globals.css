@@ -21,15 +21,15 @@
   --white: #FFFFFF; /* Blanc pur */
   --radius: 0.625rem;
   --background: #FFFFFF;
-  --foreground: #1F1F1F;
+  --foreground: #1F1F1F; /* Black for primary text in light mode */
   --card: #FFFFFF;
   --card-foreground: #1F1F1F;
   --popover: #FFFFFF;
   --popover-foreground: #1F1F1F;
-  --primary-foreground: #FFFFFF;
-  --secondary-foreground: #1F1F1F;
+  --primary-foreground: #FFFFFF; /* White for readability on violet */
+  --secondary-foreground: #FFFFFF; /* White for readability on orange */
   --muted: #F5F5F5;
-  --muted-foreground: #6B7280;
+  --muted-foreground: rgba(31, 31, 31, 0.6); /* Black 60% opacity for secondary text */
   --accent: #F5F5F5;
   --accent-foreground: #1F1F1F;
   --destructive: #EF4444;
@@ -55,17 +55,17 @@
 /* Dark mode variables */
 .dark {
   --background: #1F1F1F;
-  --foreground: #FFFFFF;
+  --foreground: #FFFFFF; /* White for primary text in dark mode */
   --card: #2D2D2D;
   --card-foreground: #FFFFFF;
   --popover: #2D2D2D;
   --popover-foreground: #FFFFFF;
-  --primary: #A78BFA;
-  --primary-foreground: #1F1F1F;
-  --secondary: #F97316;
-  --secondary-foreground: #FFFFFF;
+  --primary: #A78BFA; /* Lighter violet for dark mode */
+  --primary-foreground: #1F1F1F; /* Black for contrast */
+  --secondary: #F97316; /* Lighter orange for dark mode */
+  --secondary-foreground: #FFFFFF; /* White for readability */
   --muted: #4B5563;
-  --muted-foreground: #9CA3AF;
+  --muted-foreground: rgba(255, 255, 255, 0.6); /* White 60% opacity for secondary text */
   --accent: #4B5563;
   --accent-foreground: #FFFFFF;
   --destructive: #F87171;
@@ -94,12 +94,12 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-inter;
+    @apply bg-background text-black dark:text-white font-inter;
     font-size: 16px;
     line-height: 1.6;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-poppins font-bold text-primary;
+    @apply font-poppins font-bold text-black dark:text-white;
   }
   h1 {
     @apply text-4xl md:text-5xl;
@@ -109,6 +109,9 @@
   }
   h3 {
     @apply text-2xl;
+  }
+  p, span, a, li {
+    @apply text-black/60 dark:text-white/60;
   }
   a {
     @apply transition-colors duration-300;
@@ -124,7 +127,7 @@
     @apply bg-secondary text-secondary-foreground font-semibold rounded-lg px-6 py-3 hover:bg-secondary/90 hover:shadow-lg transition-all duration-300;
   }
   .card {
-    @apply bg-card text-card-foreground border border-border rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300;
+    @apply bg-card text-black dark:text-white border border-border rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300;
   }
   .alert {
     @apply bg-secondary/10 text-secondary font-medium p-4 rounded-lg;
@@ -138,33 +141,6 @@
   }
   .gradient-secondary {
     @apply bg-gradient-to-r from-secondary to-secondary/80;
-  }
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-  .animate-fade-in {
-    animation: fadeIn 0.5s ease-in forwards;
-  }
-}
-
-/* Animation keyframes */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 

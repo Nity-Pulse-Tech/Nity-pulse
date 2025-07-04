@@ -1,21 +1,25 @@
+'use client';
 import Hero from '@/components/Hero';
 import About from '@/components/About';
-import Projects from '@/components/Projects';
 import Services from '@/components/Services';
-import Testimonials from '@/components/Testimonials';
-import Newsletter from '@/components/Newsletter';
+import Projects from '@/components/Projects';
+import Blog from '@/components/Blog';
 import Contact from '@/components/Contact';
+import { motion } from 'framer-motion';
 
 export default function Home() {
   return (
-    <div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+    >
       <Hero />
       <About />
-      <Projects />
       <Services />
-      <Testimonials />
-      <Newsletter />
+      <Projects />
+      <Blog />
       <Contact />
-    </div>
+    </motion.div>
   );
 }

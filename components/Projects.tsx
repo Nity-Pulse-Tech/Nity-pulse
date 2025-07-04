@@ -1,6 +1,8 @@
+'use client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Smartphone, Utensils, Globe, Briefcase, Shield } from 'lucide-react';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 const Projects = () => {
   const projects = [
@@ -47,64 +49,85 @@ const Projects = () => {
   ];
 
   return (
-    <section id="projects" className="py-24 bg-white relative overflow-hidden">
+    <motion.section
+      id="projects"
+      className="py-24 bg-background relative overflow-hidden"
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 0.6 }}
+    >
       <div className="container mx-auto px-6 relative z-10">
-        <div className="text-center mb-20 animate-fade-in">
+        <motion.div
+          className="text-center mb-20"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="inline-flex items-center bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
-            <Smartphone size={16} className="mr-2" />
-            Our Creations
+            <Smartphone size={16} className="mr-2 text-black/60 dark:text-white/60" />
+            <span className="text-black dark:text-white">Our Creations</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-8">
+          <h2 className="text-4xl md:text-5xl font-bold mb-8 text-black dark:text-white">
             Innovative Projects
           </h2>
-          <p className="text-xl text-black max-w-3xl mx-auto">
+          <p className="text-xl text-black/60 dark:text-white/60 max-w-3xl mx-auto">
             Discover our portfolio of collaborative tech solutions transforming industries and empowering users.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <motion.div
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
           {projects.map((project, index) => {
             const IconComponent = project.icon;
             return (
-              <Card 
+              <motion.div
                 key={index}
-                className="group card hover:shadow-2xl transition-all duration-500 hover:scale-105 animate-fade-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <div className="relative overflow-hidden">
-                  <Image 
-                    src={project.image} 
-                    alt={project.title}
-                    width={600}
-                    height={400}
-                    className="w-full h-56 object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className={`absolute inset-0 ${project.gradient} opacity-20 group-hover:opacity-40 transition-opacity duration-300`}></div>
-                  <div className="absolute top-4 left-4 bg-white/90 px-3 py-1 rounded-full text-xs font-medium text-black">
-                    {project.category}
+                <Card className="group card hover:shadow-2xl transition-all duration-500 hover:scale-105">
+                  <div className="relative overflow-hidden">
+                    <Image 
+                      src={project.image} 
+                      alt={project.title}
+                      width={600}
+                      height={400}
+                      className="w-full h-56 object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className={`absolute inset-0 ${project.gradient} opacity-20 group-hover:opacity-40 transition-opacity duration-300`}></div>
+                    <div className="absolute top-4 left-4 bg-white/90 px-3 py-1 rounded-full text-xs font-medium text-black dark:text-white">
+                      {project.category}
+                    </div>
+                    <div className={`absolute top-4 right-4 w-10 h-10 ${project.gradient} rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300`}>
+                      <IconComponent size={20} className="text-white" />
+                    </div>
                   </div>
-                  <div className={`absolute top-4 right-4 w-10 h-10 ${project.gradient} rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300`}>
-                    <IconComponent size={20} className="text-white" />
-                  </div>
-                </div>
-                
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-xl font-bold group-hover:text-primary transition-colors">
-                    {project.title}
-                  </CardTitle>
-                </CardHeader>
-                
-                <CardContent className="pt-0">
-                  <p className="text-black/60 leading-relaxed">
-                    {project.description}
-                  </p>
-                </CardContent>
-              </Card>
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-xl font-bold text-black dark:text-white group-hover:text-primary transition-colors">
+                      {project.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <p className="text-black/60 dark:text-white/60 leading-relaxed">
+                      {project.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 

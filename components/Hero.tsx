@@ -2,54 +2,68 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 const Hero = () => {
   return (
-    <section id="home" className="min-h-screen flex items-center relative overflow-hidden bg-white">
+    <motion.section
+      id="home"
+      className="min-h-screen flex items-center relative overflow-hidden bg-background"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6 }}
+    >
       <div className="container mx-auto px-6 py-20 relative z-10">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div className="text-center lg:text-left animate-fade-in">
-            <div className="inline-flex items-center bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6 animate-slide-in">
+          <motion.div
+            className="text-center lg:text-left"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="inline-flex items-center bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
               <Sparkles size={16} className="mr-2" />
               Collaborate & Innovate
             </div>
-            
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
               <span className="text-primary">Spark</span>
               <br />
               Your Next Breakthrough
             </h1>
-            
             <div className="mb-8 space-y-4">
-              <h2 className="text-2xl md:text-3xl font-semibold">
-                Innovative Solutions for Teams
-              </h2>
-              <p className="text-lg md:text-xl text-black leading-relaxed max-w-2xl">
+              <h2 className="text-2xl md:text-3xl font-semibold">Innovative Solutions for Teams</h2>
+              <p className="text-lg md:text-xl text-foreground/80 leading-relaxed max-w-2xl">
                 Nity Pulse transforms ideas into reality with collaborative technology and design, empowering startups and teams to achieve greatness.
               </p>
             </div>
-
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="btn-primary"
                 onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 Start Collaborating
                 <ArrowRight size={20} className="ml-2" />
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="lg"
-                className="border-primary text-primary hover:bg-primary hover:text-white"
+                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
                 onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 Discover More
               </Button>
             </div>
-          </div>
-
-          <div className="relative animate-slide-in" style={{ animationDelay: '0.2s' }}>
+          </motion.div>
+          <motion.div
+            className="relative"
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
             <div className="relative max-w-lg mx-auto">
               <div className="card p-8 transform hover:scale-105 transition-all duration-500">
                 <div className="space-y-6">
@@ -59,13 +73,12 @@ const Hero = () => {
                       <div className="w-3 h-3 bg-secondary rounded-full"></div>
                       <div className="w-3 h-3 bg-black rounded-full"></div>
                     </div>
-                    <div className="text-xs text-black/60 font-mono">Nity Pulse</div>
+                    <div className="text-xs text-foreground/60 font-mono">Nity Pulse</div>
                   </div>
-                  
                   <div className="text-center">
                     <div className="relative w-72 h-72 mx-auto mb-4">
-                      <Image 
-                        src="https://images.unsplash.com/photo-1620712943543-bcc0b4614b6d?w=600&h=600&fit=crop" 
+                      <Image
+                        src="https://images.unsplash.com/photo-1620712943543-bcc0b4614b6d?w=600&h=600&fit=crop"
                         alt="Nity Pulse Team"
                         width={288}
                         height={288}
@@ -77,9 +90,9 @@ const Hero = () => {
                     <p className="text-primary font-semibold mb-3">Crafting the Future</p>
                     <div className="bg-primary/10 rounded-xl p-4">
                       <div className="flex items-center justify-between">
-                        <span className="text-primary font-medium">"Ready to Shape Tomorrow?"</span>
+                        <span className="text-primary font-medium">Ready to Shape Tomorrow?</span>
                         <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                          <div className="w-3 h-3 bg-white rounded-full animate-ping"></div>
+                          <div className="w-3 h-3 bg-primary-foreground rounded-full animate-ping"></div>
                         </div>
                       </div>
                     </div>
@@ -87,10 +100,10 @@ const Hero = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 

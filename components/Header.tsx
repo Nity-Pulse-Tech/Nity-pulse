@@ -1,123 +1,103 @@
 'use client';
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Sun, Moon } from 'lucide-react';
+import Link from 'next/link';
 import Image from 'next/image';
+import { useTheme } from 'next-themes';
+import { motion } from 'framer-motion';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const pathname = usePathname();
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const handleNavigation = (href: string) => {
-    setIsMenuOpen(false);
-    if (href.startsWith('#') && pathname === '/') {
-      const element = document.querySelector(href);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-  };
+  const { theme, setTheme } = useTheme();
 
   const navItems = [
-    { label: 'Home', href: '/#home' },
-    { label: 'About', href: '/about' },
-    { label: 'Projects', href: '/#projects' },
-    { label: 'Services', href: '/#services' },
-    { label: 'Blog', href: '/blog' },
-    { label: 'Contact', href: '/#contact' },
+    { href: '/#home', label: 'Home' },
+    { href: '/about', label: 'About' },
+    { href: '/#services', label: 'Services' },
+    { href: '/#projects', label: 'Projects' },
+    { href: '/blog', label: 'Blog' },
+    { href: '/#contact', label: 'Contact' },
   ];
 
   return (
-    <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-black/95 text-white shadow-lg' : 'bg-transparent text-black'}`}>
-      <div className="container mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
-          <Link 
-            href="/#home" 
-            className="flex items-center space-x-3 group"
-            onClick={() => handleNavigation('#home')}
-          >
-            <Image 
-              src="/logo.png" 
-              alt="Nity Pulse Logo" 
-              width={32}
-              height={32}
-              className="group-hover:scale-110 transition-transform duration-300"
-            />
-            <div className="text-2xl font-bold group-hover:text-primary transition-colors">
-              Nity Pulse
-            </div>
-          </Link>
+    <motion.header
+      className="fixed top-0 left-0 w-full bg-background z-50 shadow-md"
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+        <Link href="/">
+          <Image src="/logo.png" alt="Nity Pulse Logo" width={120} height={40} className="h-10 w-auto" />
+        </Link>
 
-          <nav className="hidden md:flex items-center space-x-8">
+        <nav className="hidden lg:flex items-center space-x-6">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="text-black dark:text-white hover:text-primary transition-colors"
+            >
+              {item.label}
+            </Link>
+          ))}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-black dark:text-white hover:text-primary"
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+          </Button>
+        </nav>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          className="lg:hidden text-black dark:text-white hover:text-primary"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle menu"
+        >
+          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </Button>
+      </div>
+
+      {isMenuOpen && (
+        <motion.nav
+          className="lg:hidden bg-background border-t border-border"
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: 'auto', opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="container mx-auto px-6 py-4 flex flex-col space-y-4">
             {navItems.map((item) => (
               <Link
-                key={item.label}
+                key={item.href}
                 href={item.href}
-                className="hover:text-primary transition-colors font-medium relative group"
-                onClick={() => handleNavigation(item.href)}
+                className="text-black dark:text-white hover:text-primary transition-colors"
+                onClick={() => setIsMenuOpen(false)}
               >
                 {item.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
               </Link>
             ))}
-          </nav>
-
-          <div className="hidden md:block">
-            <Link href="/#contact">
-              <Button 
-                className="btn-primary"
-                onClick={() => handleNavigation('#contact')}
+            <div className="flex space-x-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-black dark:text-white hover:text-primary"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                aria-label="Toggle theme"
               >
-                Get Started
+                {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
               </Button>
-            </Link>
-          </div>
-
-          <button
-            className="md:hidden hover:text-primary transition-colors"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-
-        {isMenuOpen && (
-          <nav className="md:hidden mt-6 pb-6 animate-fade-in">
-            <div className="flex flex-col space-y-4">
-              {navItems.map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  className="hover:text-primary transition-colors font-medium py-2 text-left"
-                  onClick={() => handleNavigation(item.href)}
-                >
-                  {item.label}
-                </Link>
-              ))}
-              <Link href="/#contact">
-                <Button 
-                  className="btn-primary"
-                  onClick={() => handleNavigation('#contact')}
-                >
-                  Get Started
-                </Button>
-              </Link>
             </div>
-          </nav>
-        )}
-      </div>
-    </header>
+          </div>
+        </motion.nav>
+      )}
+    </motion.header>
   );
 };
 

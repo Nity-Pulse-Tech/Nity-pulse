@@ -1,5 +1,6 @@
 import './globals.css';
 import { Inter, Poppins } from 'next/font/google';
+import { ThemeProvider } from 'next-themes';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Toaster } from 'sonner';
@@ -24,12 +25,14 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
+    <html lang="en" className={`${inter.variable} ${poppins.variable}`} suppressHydrationWarning>
       <body className="antialiased">
-        <Header />
-        <main>{children}</main>
-        <Footer />
-        <Toaster richColors position="top-right" />
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <Header />
+          <main>{children}</main>
+          <Footer />
+          <Toaster richColors position="top-right" />
+        </ThemeProvider>
       </body>
     </html>
   );
