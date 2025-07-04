@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { ArrowRight, Calendar, Clock, User, ThumbsUp, Heart } from 'lucide-react';
 import { blogPosts } from '@/data/blogData';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 
@@ -64,9 +65,11 @@ const Blog = () => {
               <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
                 <CardHeader className="p-0">
                   <div className="relative overflow-hidden rounded-t-lg">
-                    <img
+                    <Image
                       src={`https://images.unsplash.com/photo-${1600000000 + index}?w=600&h=400&fit=crop`}
                       alt={post.title}
+                      width={600}
+                      height={400}
                       className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute top-4 left-4">
@@ -121,7 +124,7 @@ const Blog = () => {
                       className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
                     >
                       Read More
-                      <ArrowRight size={16} className="ml-2" />
+                      <ArrowRight size={16} className="ml-2 text-black/60 dark:text-white/60" />
                     </Button>
                   </Link>
                 </CardContent>
@@ -140,7 +143,7 @@ const Blog = () => {
           <Link href="/blog">
             <Button size="lg" className="btn-primary">
               View All Articles
-              <ArrowRight size={20} className="ml-2" />
+              <ArrowRight size={20} className="ml-2 text-white" />
             </Button>
           </Link>
         </motion.div>

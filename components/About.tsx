@@ -119,14 +119,22 @@ const About = () => {
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
-              <Card key={index} className="card text-center p-6">
-                <Icon size={32} className="text-primary mx-auto mb-4" />
-                <h3 className="text-3xl font-bold text-primary">
-                  <span ref={(el) => (statsRef.current[index] = el)}>{stat.value}</span>
-                  {index === 0 || index === 1 ? '+' : ''}
-                </h3>
-                <p className="text-black/60 dark:text-white/60">{stat.label}</p>
-              </Card>
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <Card className="card text-center p-6">
+                  <Icon size={32} className="text-primary mx-auto mb-4" />
+                  <h3 className="text-3xl font-bold text-primary">
+                    <span ref={(el) => { statsRef.current[index] = el; }}>{stat.value}</span>
+                    {index === 0 || index === 1 ? '+' : ''}
+                  </h3>
+                  <p className="text-black/60 dark:text-white/60">{stat.label}</p>
+                </Card>
+              </motion.div>
             );
           })}
         </motion.div>
