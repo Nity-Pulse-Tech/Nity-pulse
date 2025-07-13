@@ -1,15 +1,17 @@
 'use client';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Sun, Moon } from 'lucide-react';
+import { Menu, X, Sun, Moon, User, LogOut, Settings } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/lib/contexts/AuthContext';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const { user, isAuthenticated, logout } = useAuth();
 
   const navItems = [
     { href: '/#home', label: 'Home' },
@@ -19,6 +21,11 @@ const Header = () => {
     { href: '/blog', label: 'Blog' },
     { href: '/#contact', label: 'Contact' },
   ];
+
+  const handleLogout = () => {
+    logout();
+    setIsMenuOpen(false);
+  };
 
   return (
     <motion.header
@@ -42,6 +49,51 @@ const Header = () => {
               {item.label}
             </Link>
           ))}
+          
+          {/* Dashboard button for admin users */}
+          {isAuthenticated && user?.is_admin && (
+            <Link href="/dashboard">
+              <Button variant="outline" size="sm" className="text-primary border-primary hover:bg-primary hover:text-white">
+                <Settings size={16} className="mr-2" />
+                Dashboard
+              </Button>
+            </Link>
+          )}
+
+          {/* Authentication buttons */}
+          <div className="flex items-center space-x-2">
+            {isAuthenticated ? (
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  Hi, {user?.first_name}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  <LogOut size={16} className="mr-1" />
+                  Logout
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <Link href="/login">
+                  <Button variant="ghost" size="sm">
+                    <User size={16} className="mr-1" />
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button variant="outline" size="sm" className="text-primary border-primary hover:bg-primary hover:text-white">
+                    Sign Up
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </div>
+
           <Button
             variant="ghost"
             size="icon"
@@ -83,6 +135,53 @@ const Header = () => {
                 {item.label}
               </Link>
             ))}
+            
+            {/* Dashboard link for admin users */}
+            {isAuthenticated && user?.is_admin && (
+              <Link
+                href="/dashboard"
+                className="text-black dark:text-white hover:text-primary transition-colors flex items-center"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Settings size={16} className="mr-2" />
+                Dashboard
+              </Link>
+            )}
+
+            {/* Authentication section */}
+            <div className="border-t border-border pt-4">
+              {isAuthenticated ? (
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Welcome, {user?.first_name}!
+                  </p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleLogout}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50 w-full justify-start"
+                  >
+                    <LogOut size={16} className="mr-2" />
+                    Logout
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Link href="/login" onClick={() => setIsMenuOpen(false)}>
+                    <Button variant="ghost" size="sm" className="w-full justify-start">
+                      <User size={16} className="mr-2" />
+                      Login
+                    </Button>
+                  </Link>
+                  <Link href="/register" onClick={() => setIsMenuOpen(false)}>
+                    <Button variant="outline" size="sm" className="w-full justify-start text-primary border-primary hover:bg-primary hover:text-white">
+                      Sign Up
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </div>
+
             <div className="flex space-x-4">
               <Button
                 variant="ghost"

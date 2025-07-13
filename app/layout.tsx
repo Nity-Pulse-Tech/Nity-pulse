@@ -1,6 +1,7 @@
 
 import './globals.css';
 import { ThemeProvider } from 'next-themes';
+import { AuthProvider } from '@/lib/contexts/AuthContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Toaster } from 'sonner';
@@ -14,12 +15,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Header />
-          <main>{children}</main>
-          <Footer />
-          <Toaster richColors position="top-right" />
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <Header />
+            <main>{children}</main>
+            <Footer />
+            <Toaster richColors position="top-right" />
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );
