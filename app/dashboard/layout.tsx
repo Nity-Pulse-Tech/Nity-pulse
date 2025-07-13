@@ -1,52 +1,84 @@
 'use client';
-import Link from 'next/link';
-import { ReactNode, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import '@/app/globals.css';
 
-export default function DashboardLayout({ children }: { children: ReactNode }) {
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import { Menu } from 'lucide-react';
+import { motion } from 'framer-motion';
+import Sidebar from './_components/Sidebar';
+
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+}
+
+export default function DashboardLayout({ children }: DashboardLayoutProps) {
+  const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
-  const [dark, setDark] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && localStorage.getItem('isAdmin') !== 'true') {
+    if (!isLoading && (!isAuthenticated || !user)) {
       router.push('/login');
     }
-    // Set initial theme
-    if (typeof window !== 'undefined') {
-      const isDark = localStorage.getItem('theme') === 'dark';
-      setDark(isDark);
-      document.documentElement.classList.toggle('dark', isDark);
-    }
-  }, [router]);
+  }, [isAuthenticated, user, isLoading, router]);
 
-  const toggleTheme = () => {
-    const newDark = !dark;
-    setDark(newDark);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('theme', newDark ? 'dark' : 'light');
-      document.documentElement.classList.toggle('dark', newDark);
-    }
-  };
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+            className="rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto"
+          ></motion.div>
+          <p className="mt-4 text-gray-600 font-medium">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !user) {
+    return null;
+  }
 
   return (
-    <div className="flex min-h-screen bg-background dark:bg-black transition-colors">
-      <aside className="w-64 bg-sidebar dark:bg-sidebar border-r border-sidebar-border flex flex-col p-6">
-        <h2 className="text-2xl font-bold mb-8 text-sidebar-foreground dark:text-sidebar-foreground">Admin Dashboard</h2>
-        <nav className="flex flex-col gap-4 mb-8">
-          <Link href="/dashboard/blog" className="hover:text-primary">Blog Management</Link>
-          <Link href="/dashboard/projects" className="hover:text-primary">Projects Management</Link>
-          <hr className="my-4 border-sidebar-border" />
-          <Link href="/" className="hover:text-primary text-sm">&larr; Back to site</Link>
-        </nav>
-        <button
-          onClick={toggleTheme}
-          className="mt-auto py-2 px-4 rounded bg-muted dark:bg-muted text-muted-foreground dark:text-muted-foreground border border-border hover:bg-accent dark:hover:bg-accent transition-colors"
-        >
-          {dark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-        </button>
-      </aside>
-      <main className="flex-1 bg-background dark:bg-black p-8 transition-colors">{children}</main>
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Sidebar */}
+      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col lg:ml-0">
+        {/* Top header */}
+        <header className="bg-white shadow-sm border-b border-gray-200 px-4 py-3 lg:px-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="lg:hidden p-2 rounded-md text-gray-600 hover:bg-gray-100"
+                aria-label="Open sidebar"
+              >
+                <Menu size={24} />
+              </button>
+              <div className="hidden lg:block">
+                <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm font-medium text-gray-700">
+                Welcome back, {user.first_name}!
+              </span>
+            </div>
+          </div>
+        </header>
+
+        {/* Page content */}
+        <main className="flex-1 p-4 lg:p-6">
+          <div className="max-w-7xl mx-auto">
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
   );
-} 
+}

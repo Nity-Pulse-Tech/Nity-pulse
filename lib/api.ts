@@ -47,7 +47,7 @@ authApi.interceptors.response.use(
         if (typeof window !== 'undefined') {
           const refreshToken = localStorage.getItem('refresh_token');
           if (refreshToken) {
-            const response = await publicApi.post('/api/core/login/refresh/', {
+            const response = await publicApi.post('/api/core/admin/refresh/', {
               refresh: refreshToken,
             });
             

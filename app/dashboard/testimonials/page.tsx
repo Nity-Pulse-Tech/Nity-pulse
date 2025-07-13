@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { dashboardService } from '@/lib/services/dashboardService';
-import { Blog } from '@/lib/types/dashboard';
+import { Testimonial } from '@/lib/types/dashboard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -13,69 +13,70 @@ import {
   Search, 
   Edit, 
   Trash2, 
-  Eye, 
-  FileText,
+  MessageSquare,
   Calendar,
-  Filter
+  Filter,
+  User,
+  Quote
 } from 'lucide-react';
 
-export default function BlogManagementPage() {
-  const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [filteredBlogs, setFilteredBlogs] = useState<Blog[]>([]);
+export default function TestimonialsManagementPage() {
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [filteredTestimonials, setFilteredTestimonials] = useState<Testimonial[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
 
   useEffect(() => {
-    loadBlogs();
+    loadTestimonials();
   }, []);
 
   useEffect(() => {
-    filterBlogs();
-  }, [blogs, searchTerm, statusFilter]);
+    filterTestimonials();
+  }, [testimonials, searchTerm, statusFilter]);
 
-  const loadBlogs = async () => {
+  const loadTestimonials = async () => {
     try {
       setIsLoading(true);
-      const data = await dashboardService.getAllBlogs();
-      setBlogs(data);
+      const data = await dashboardService.getAllTestimonials();
+      setTestimonials(data);
     } catch (error: any) {
-      toast.error(error.message || 'Failed to load blogs');
+      toast.error(error.message || 'Failed to load testimonials');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const filterBlogs = () => {
-    let filtered = blogs;
+  const filterTestimonials = () => {
+    let filtered = testimonials;
 
     // Search filter
     if (searchTerm) {
-      filtered = filtered.filter(blog =>
-        blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        blog.content.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(testimonial =>
+        testimonial.author_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        testimonial.content.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     // Status filter
     if (statusFilter !== 'ALL') {
-      filtered = filtered.filter(blog => blog.status === statusFilter);
+      filtered = filtered.filter(testimonial => testimonial.status === statusFilter);
     }
 
-    setFilteredBlogs(filtered);
+    setFilteredTestimonials(filtered);
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this blog post?')) {
+    if (!confirm('Are you sure you want to delete this testimonial?')) {
       return;
     }
 
     try {
-      await dashboardService.deleteBlog(id);
-      toast.success('Blog post deleted successfully');
-      loadBlogs(); // Reload the list
+      await dashboardService.deleteTestimonial(id);
+      toast.success('Testimonial deleted successfully');
+      loadTestimonials(); // Reload the list
     } catch (error: any) {
-      toast.error(error.message || 'Failed to delete blog post');
+      toast.error(error.message || 'Failed to delete testimonial');
     }
   };
 
@@ -105,7 +106,7 @@ export default function BlogManagementPage() {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading blogs...</p>
+          <p className="mt-4 text-gray-600">Loading testimonials...</p>
         </div>
       </div>
     );
@@ -116,15 +117,15 @@ export default function BlogManagementPage() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Blog Management</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Testimonials Management</h1>
           <p className="mt-2 text-gray-600">
-            Manage your blog posts, create new content, and track their status.
+            Manage customer testimonials and reviews to build trust with your audience.
           </p>
         </div>
-        <Link href="/dashboard/blog/create">
+        <Link href="/dashboard/testimonials/create">
           <Button className="bg-purple-600 hover:bg-purple-700 text-white">
             <Plus size={20} className="mr-2" />
-            Create Blog Post
+            Add Testimonial
           </Button>
         </Link>
       </div>
@@ -142,7 +143,7 @@ export default function BlogManagementPage() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
             <Input
               type="text"
-              placeholder="Search blogs..."
+              placeholder="Search testimonials..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -166,15 +167,15 @@ export default function BlogManagementPage() {
 
           {/* Stats */}
           <div className="flex items-center justify-center bg-gray-50 rounded-md p-3">
-            <FileText className="text-gray-600 mr-2" size={20} />
+            <MessageSquare className="text-gray-600 mr-2" size={20} />
             <span className="text-sm text-gray-600">
-              {filteredBlogs.length} of {blogs.length} posts
+              {filteredTestimonials.length} of {testimonials.length} testimonials
             </span>
           </div>
         </div>
       </motion.div>
 
-      {/* Blog List */}
+      {/* Testimonials List */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -182,25 +183,25 @@ export default function BlogManagementPage() {
         className="bg-white rounded-lg shadow overflow-hidden"
       >
         <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Blog Posts</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Testimonials</h2>
         </div>
 
-        {filteredBlogs.length === 0 ? (
+        {filteredTestimonials.length === 0 ? (
           <div className="p-8 text-center">
-            <FileText className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No blog posts found</h3>
+            <MessageSquare className="mx-auto h-12 w-12 text-gray-400" />
+            <h3 className="mt-2 text-sm font-medium text-gray-900">No testimonials found</h3>
             <p className="mt-1 text-sm text-gray-500">
               {searchTerm || statusFilter !== 'ALL' 
                 ? 'Try adjusting your search or filter criteria.'
-                : 'Get started by creating your first blog post.'
+                : 'Get started by adding your first testimonial.'
               }
             </p>
             {!searchTerm && statusFilter === 'ALL' && (
               <div className="mt-6">
-                <Link href="/dashboard/blog/create">
+                <Link href="/dashboard/testimonials/create">
                   <Button className="bg-purple-600 hover:bg-purple-700 text-white">
                     <Plus size={20} className="mr-2" />
-                    Create Blog Post
+                    Add Testimonial
                   </Button>
                 </Link>
               </div>
@@ -208,64 +209,57 @@ export default function BlogManagementPage() {
           </div>
         ) : (
           <div className="divide-y divide-gray-200">
-            {filteredBlogs.map((blog) => (
+            {filteredTestimonials.map((testimonial) => (
               <motion.div
-                key={blog.id}
+                key={testimonial.id}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="p-6 hover:bg-gray-50 transition-colors"
               >
-                <div className="flex items-center justify-between">
+                <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-3">
-                      <h3 className="text-lg font-medium text-gray-900 truncate">
-                        {blog.title}
-                      </h3>
-                      <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(blog.status)}`}>
-                        {blog.status}
-                      </span>
+                    <div className="flex items-center space-x-3 mb-3">
+                      <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                        <User className="text-purple-600" size={20} />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-medium text-gray-900">
+                          {testimonial.author_name}
+                        </h3>
+                        <div className="flex items-center space-x-2">
+                          <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(testimonial.status)}`}>
+                            {testimonial.status}
+                          </span>
+                          <span className="text-sm text-gray-500">
+                            {formatDate(testimonial.created)}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                     
-                    <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
-                      <div className="flex items-center">
-                        <Calendar size={16} className="mr-1" />
-                        {formatDate(blog.created)}
-                      </div>
-                      <div className="flex items-center">
-                        <FileText size={16} className="mr-1" />
-                        {blog.content.length > 100 
-                          ? `${blog.content.substring(0, 100)}...` 
-                          : blog.content
+                    <div className="relative bg-gray-50 rounded-lg p-4">
+                      <Quote className="absolute top-2 left-2 text-gray-300" size={16} />
+                      <p className="text-gray-700 pl-6">
+                        {testimonial.content.length > 200 
+                          ? `${testimonial.content.substring(0, 200)}...` 
+                          : testimonial.content
                         }
-                      </div>
+                      </p>
                     </div>
-
-                    {blog.image && (
-                      <div className="mt-2">
-                        <span className="text-xs text-gray-500">Has image</span>
-                      </div>
-                    )}
                   </div>
 
                   <div className="flex items-center space-x-2 ml-4">
-                    <Link href={`/dashboard/blog/${blog.id}/edit`}>
+                    <Link href={`/dashboard/testimonials/${testimonial.id}/edit`}>
                       <Button variant="outline" size="sm">
                         <Edit size={16} className="mr-1" />
                         Edit
                       </Button>
                     </Link>
                     
-                    <Link href={`/blog/${blog.slug}`} target="_blank">
-                      <Button variant="outline" size="sm">
-                        <Eye size={16} className="mr-1" />
-                        View
-                      </Button>
-                    </Link>
-                    
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleDelete(blog.id)}
+                      onClick={() => handleDelete(testimonial.id)}
                       className="text-red-600 border-red-600 hover:bg-red-50"
                     >
                       <Trash2 size={16} className="mr-1" />

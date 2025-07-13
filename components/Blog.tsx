@@ -1,155 +1,125 @@
 'use client';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { ArrowRight, Calendar, Clock, User, ThumbsUp, Heart } from 'lucide-react';
-import { blogPosts } from '@/data/blogData';
-import Link from 'next/link';
-import Image from 'next/image';
+
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Calendar, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
-const Blog = () => {
-  const featuredPosts = blogPosts.slice(0, 3);
-  const [reactions, setReactions] = useState<{ [key: string]: { likes: number; loves: number } }>(
-    blogPosts.reduce((acc, post) => ({ ...acc, [post.id]: { likes: 0, loves: 0 } }), {})
-  );
+interface BlogPost {
+  id: string;
+  title: string;
+  content: string;
+  image?: string;
+  created_at: string;
+  status: string;
+}
 
-  const handleReaction = (postId: string, type: 'like' | 'love') => {
-    setReactions((prev) => ({
-      ...prev,
-      [postId]: {
-        ...prev[postId],
-        [type === 'like' ? 'likes' : 'loves']: prev[postId][type === 'like' ? 'likes' : 'loves'] + 1,
-      },
-    }));
-  };
+interface BlogProps {
+  blogs: BlogPost[];
+}
+
+export default function Blog({ blogs }: BlogProps) {
+  if (!blogs || blogs.length === 0) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center"
+          >
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Latest Blog Posts</h2>
+            <p className="text-gray-600 mb-8">No blog posts available at the moment.</p>
+          </motion.div>
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <motion.section
-      id="blog"
-      className="py-20 bg-background"
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.6 }}
-    >
-      <div className="container mx-auto px-6">
+    <section className="py-16 bg-white">
+      <div className="container mx-auto px-4">
         <motion.div
-          className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
           transition={{ duration: 0.5 }}
+          className="text-center mb-12"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-black dark:text-white">Tech Trends & Insights</h2>
-          <p className="text-xl text-black/60 dark:text-white/60 max-w-3xl mx-auto leading-relaxed">
-            Dive into the latest innovations, design trends, and collaborative tech stories shaping the future.
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Latest Blog Posts</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Stay updated with our latest insights, tutorials, and industry trends.
           </p>
         </motion.div>
 
-        <motion.div
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          {featuredPosts.map((post, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {blogs.map((post, index) => (
             <motion.div
               key={post.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+              <Card className="h-full hover:shadow-lg transition-shadow">
                 <CardHeader className="p-0">
-                  <div className="relative overflow-hidden rounded-t-lg">
-                    <Image
-                      src={`https://images.unsplash.com/photo-${1600000000 + index}?w=600&h=400&fit=crop`}
-                      alt={post.title}
-                      width={600}
-                      height={400}
-                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute top-4 left-4">
-                      <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium">
-                        {post.category}
-                      </span>
+                  {post.image && (
+                    <div className="aspect-video overflow-hidden rounded-t-lg">
+                      <img
+                        src={post.image}
+                        alt={post.title}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
-                  </div>
+                  )}
                 </CardHeader>
                 <CardContent className="p-6">
-                  <div className="flex items-center text-sm text-black/60 dark:text-white/60 mb-3 space-x-4">
-                    <div className="flex items-center">
-                      <Calendar size={14} className="mr-1 text-black/60 dark:text-white/60" />
-                      {new Date(post.publishDate).toLocaleDateString()}
-                    </div>
-                    <div className="flex items-center">
-                      <Clock size={14} className="mr-1 text-black/60 dark:text-white/60" />
-                      {post.readTime}
-                    </div>
+                  <div className="flex items-center text-sm text-gray-500 mb-3">
+                    <Calendar size={16} className="mr-2" />
+                    {new Date(post.created_at).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
                   </div>
-                  <h3 className="text-xl font-bold mb-3 text-black dark:text-white group-hover:text-primary transition-colors">
+                  
+                  <CardTitle className="text-xl mb-3 line-clamp-2">
                     {post.title}
-                  </h3>
-                  <p className="text-black/60 dark:text-white/60 mb-4 line-clamp-3">{post.excerpt}</p>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center">
-                      <User size={16} className="mr-2 text-black/60 dark:text-white/60" />
-                      <span className="text-sm text-black/60 dark:text-white/60">{post.author}</span>
-                    </div>
-                    <div className="flex space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleReaction(post.id, 'like')}
-                      >
-                        <ThumbsUp size={16} className="mr-1 text-black/60 dark:text-white/60" />
-                        {reactions[post.id].likes}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleReaction(post.id, 'love')}
-                      >
-                        <Heart size={16} className="mr-1 text-black/60 dark:text-white/60" />
-                        {reactions[post.id].loves}
-                      </Button>
-                    </div>
-                  </div>
+                  </CardTitle>
+                  
+                  <CardDescription className="mb-4 line-clamp-3">
+                    {post.content.length > 150 
+                      ? `${post.content.substring(0, 150)}...` 
+                      : post.content
+                    }
+                  </CardDescription>
+
                   <Link href={`/blog/${post.id}`}>
-                    <Button
-                      variant="outline"
-                      className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
-                    >
+                    <Button variant="outline" size="sm" className="w-full">
                       Read More
-                      <ArrowRight size={16} className="ml-2 text-black/60 dark:text-white/60" />
+                      <ArrowRight size={16} className="ml-2" />
                     </Button>
                   </Link>
                 </CardContent>
               </Card>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
 
         <motion.div
-          className="text-center"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.4 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="text-center mt-12"
         >
           <Link href="/blog">
-            <Button size="lg" className="btn-primary">
-              View All Articles
-              <ArrowRight size={20} className="ml-2 text-white" />
+            <Button size="lg">
+              View All Posts
+              <ArrowRight size={20} className="ml-2" />
             </Button>
           </Link>
         </motion.div>
       </div>
-    </motion.section>
+    </section>
   );
-};
-
-export default Blog;
+}

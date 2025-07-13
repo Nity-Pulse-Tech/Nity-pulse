@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { dashboardService } from '@/lib/services/dashboardService';
-import { Blog } from '@/lib/types/dashboard';
+import { Portfolio } from '@/lib/types/dashboard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -14,68 +14,69 @@ import {
   Edit, 
   Trash2, 
   Eye, 
-  FileText,
+  Briefcase,
   Calendar,
-  Filter
+  Filter,
+  ExternalLink
 } from 'lucide-react';
 
-export default function BlogManagementPage() {
-  const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [filteredBlogs, setFilteredBlogs] = useState<Blog[]>([]);
+export default function PortfolioManagementPage() {
+  const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
+  const [filteredPortfolios, setFilteredPortfolios] = useState<Portfolio[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
 
   useEffect(() => {
-    loadBlogs();
+    loadPortfolios();
   }, []);
 
   useEffect(() => {
-    filterBlogs();
-  }, [blogs, searchTerm, statusFilter]);
+    filterPortfolios();
+  }, [portfolios, searchTerm, statusFilter]);
 
-  const loadBlogs = async () => {
+  const loadPortfolios = async () => {
     try {
       setIsLoading(true);
-      const data = await dashboardService.getAllBlogs();
-      setBlogs(data);
+      const data = await dashboardService.getAllPortfolios();
+      setPortfolios(data);
     } catch (error: any) {
-      toast.error(error.message || 'Failed to load blogs');
+      toast.error(error.message || 'Failed to load portfolios');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const filterBlogs = () => {
-    let filtered = blogs;
+  const filterPortfolios = () => {
+    let filtered = portfolios;
 
     // Search filter
     if (searchTerm) {
-      filtered = filtered.filter(blog =>
-        blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        blog.content.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(portfolio =>
+        portfolio.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        portfolio.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     // Status filter
     if (statusFilter !== 'ALL') {
-      filtered = filtered.filter(blog => blog.status === statusFilter);
+      filtered = filtered.filter(portfolio => portfolio.status === statusFilter);
     }
 
-    setFilteredBlogs(filtered);
+    setFilteredPortfolios(filtered);
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this blog post?')) {
+    if (!confirm('Are you sure you want to delete this portfolio item?')) {
       return;
     }
 
     try {
-      await dashboardService.deleteBlog(id);
-      toast.success('Blog post deleted successfully');
-      loadBlogs(); // Reload the list
+      await dashboardService.deletePortfolio(id);
+      toast.success('Portfolio item deleted successfully');
+      loadPortfolios(); // Reload the list
     } catch (error: any) {
-      toast.error(error.message || 'Failed to delete blog post');
+      toast.error(error.message || 'Failed to delete portfolio item');
     }
   };
 
@@ -105,7 +106,7 @@ export default function BlogManagementPage() {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading blogs...</p>
+          <p className="mt-4 text-gray-600">Loading portfolios...</p>
         </div>
       </div>
     );
@@ -116,15 +117,15 @@ export default function BlogManagementPage() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Blog Management</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Portfolio Management</h1>
           <p className="mt-2 text-gray-600">
-            Manage your blog posts, create new content, and track their status.
+            Manage your portfolio items, showcase your work, and track their status.
           </p>
         </div>
-        <Link href="/dashboard/blog/create">
+        <Link href="/dashboard/portfolio/create">
           <Button className="bg-purple-600 hover:bg-purple-700 text-white">
             <Plus size={20} className="mr-2" />
-            Create Blog Post
+            Add Portfolio Item
           </Button>
         </Link>
       </div>
@@ -142,7 +143,7 @@ export default function BlogManagementPage() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
             <Input
               type="text"
-              placeholder="Search blogs..."
+              placeholder="Search portfolios..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -166,15 +167,15 @@ export default function BlogManagementPage() {
 
           {/* Stats */}
           <div className="flex items-center justify-center bg-gray-50 rounded-md p-3">
-            <FileText className="text-gray-600 mr-2" size={20} />
+            <Briefcase className="text-gray-600 mr-2" size={20} />
             <span className="text-sm text-gray-600">
-              {filteredBlogs.length} of {blogs.length} posts
+              {filteredPortfolios.length} of {portfolios.length} items
             </span>
           </div>
         </div>
       </motion.div>
 
-      {/* Blog List */}
+      {/* Portfolio Grid */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -182,94 +183,108 @@ export default function BlogManagementPage() {
         className="bg-white rounded-lg shadow overflow-hidden"
       >
         <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Blog Posts</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Portfolio Items</h2>
         </div>
 
-        {filteredBlogs.length === 0 ? (
+        {filteredPortfolios.length === 0 ? (
           <div className="p-8 text-center">
-            <FileText className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No blog posts found</h3>
+            <Briefcase className="mx-auto h-12 w-12 text-gray-400" />
+            <h3 className="mt-2 text-sm font-medium text-gray-900">No portfolio items found</h3>
             <p className="mt-1 text-sm text-gray-500">
               {searchTerm || statusFilter !== 'ALL' 
                 ? 'Try adjusting your search or filter criteria.'
-                : 'Get started by creating your first blog post.'
+                : 'Get started by adding your first portfolio item.'
               }
             </p>
             {!searchTerm && statusFilter === 'ALL' && (
               <div className="mt-6">
-                <Link href="/dashboard/blog/create">
+                <Link href="/dashboard/portfolio/create">
                   <Button className="bg-purple-600 hover:bg-purple-700 text-white">
                     <Plus size={20} className="mr-2" />
-                    Create Blog Post
+                    Add Portfolio Item
                   </Button>
                 </Link>
               </div>
             )}
           </div>
         ) : (
-          <div className="divide-y divide-gray-200">
-            {filteredBlogs.map((blog) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+            {filteredPortfolios.map((portfolio) => (
               <motion.div
-                key={blog.id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="p-6 hover:bg-gray-50 transition-colors"
+                key={portfolio.id}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-3">
-                      <h3 className="text-lg font-medium text-gray-900 truncate">
-                        {blog.title}
-                      </h3>
-                      <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(blog.status)}`}>
-                        {blog.status}
-                      </span>
-                    </div>
-                    
-                    <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
-                      <div className="flex items-center">
-                        <Calendar size={16} className="mr-1" />
-                        {formatDate(blog.created)}
-                      </div>
-                      <div className="flex items-center">
-                        <FileText size={16} className="mr-1" />
-                        {blog.content.length > 100 
-                          ? `${blog.content.substring(0, 100)}...` 
-                          : blog.content
-                        }
-                      </div>
-                    </div>
+                {/* Image */}
+                {portfolio.image && (
+                  <div className="aspect-video bg-gray-100">
+                    <img
+                      src={portfolio.image}
+                      alt={portfolio.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
 
-                    {blog.image && (
-                      <div className="mt-2">
-                        <span className="text-xs text-gray-500">Has image</span>
+                {/* Content */}
+                <div className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-medium text-gray-900 truncate">
+                      {portfolio.title}
+                    </h3>
+                    <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(portfolio.status)}`}>
+                      {portfolio.status}
+                    </span>
+                  </div>
+
+                  <p className="text-sm text-gray-600 mb-3 line-clamp-3">
+                    {portfolio.description}
+                  </p>
+
+                  <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                    <div className="flex items-center">
+                      <Calendar size={14} className="mr-1" />
+                      {formatDate(portfolio.created)}
+                    </div>
+                    {portfolio.link && (
+                      <div className="flex items-center">
+                        <ExternalLink size={14} className="mr-1" />
+                        Has link
                       </div>
                     )}
                   </div>
 
-                  <div className="flex items-center space-x-2 ml-4">
-                    <Link href={`/dashboard/blog/${blog.id}/edit`}>
-                      <Button variant="outline" size="sm">
-                        <Edit size={16} className="mr-1" />
+                  {/* Actions */}
+                  <div className="flex items-center space-x-2">
+                    <Link href={`/dashboard/portfolio/${portfolio.id}/edit`} className="flex-1">
+                      <Button variant="outline" size="sm" className="w-full">
+                        <Edit size={14} className="mr-1" />
                         Edit
                       </Button>
                     </Link>
                     
-                    <Link href={`/blog/${blog.slug}`} target="_blank">
-                      <Button variant="outline" size="sm">
-                        <Eye size={16} className="mr-1" />
-                        View
-                      </Button>
-                    </Link>
+                    {portfolio.link && (
+                      <a
+                        href={portfolio.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1"
+                      >
+                        <Button variant="outline" size="sm" className="w-full">
+                          <Eye size={14} className="mr-1" />
+                          View
+                        </Button>
+                      </a>
+                    )}
                     
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleDelete(blog.id)}
+                      onClick={() => handleDelete(portfolio.id)}
                       className="text-red-600 border-red-600 hover:bg-red-50"
                     >
-                      <Trash2 size={16} className="mr-1" />
-                      Delete
+                      <Trash2 size={14} />
                     </Button>
                   </div>
                 </div>

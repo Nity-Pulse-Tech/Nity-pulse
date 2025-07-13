@@ -1,108 +1,125 @@
 'use client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Smartphone, Utensils, Globe, Briefcase, Shield } from 'lucide-react';
-import Image from 'next/image';
 
-const Projects = () => {
-  const projects = [
-    {
-      title: "PulseLearn",
-      description: "A collaborative learning platform offering resources, AI-driven insights, and community forums to empower students and educators.",
-      image: "https://images.unsplash.com/photo-1516321310762-90b0f9b1a4b1?w=600&h=400&fit=crop",
-      icon: Smartphone,
-      gradient: "gradient-primary",
-      category: "Education"
-    },
-    {
-      title: "FoodConnect",
-      description: "A seamless food ordering app connecting users with local restaurants for a delightful dining experience.",
-      image: "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=600&h=400&fit=crop",
-      icon: Utensils,
-      gradient: "gradient-secondary",
-      category: "Food & Delivery"
-    },
-    {
-      title: "CultureHub",
-      description: "An app celebrating African heritage, enabling users to explore languages and traditions interactively.",
-      image: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?w=600&h=400&fit=crop",
-      icon: Globe,
-      gradient: "gradient-primary",
-      category: "Culture"
-    },
-    {
-      title: "JobLink",
-      description: "A platform connecting job seekers with local opportunities, simplifying the job search process.",
-      image: "https://images.unsplash.com/photo-1516321310762-90b0f9b1a4b2?w=600&h=400&fit=crop",
-      icon: Briefcase,
-      gradient: "gradient-secondary",
-      category: "Employment"
-    },
-    {
-      title: "SafeNet",
-      description: "An app educating users on cybersecurity best practices to stay secure in the digital world.",
-      image: "https://images.unsplash.com/photo-1516321310762-90b0f9b1a4b3?w=600&h=400&fit=crop",
-      icon: Shield,
-      gradient: "gradient-primary",
-      category: "Cybersecurity"
-    }
-  ];
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ExternalLink, Github } from 'lucide-react';
+
+interface PortfolioItem {
+  id: string;
+  title: string;
+  description: string;
+  image?: string;
+  technologies?: string;
+  project_url?: string;
+  github_url?: string;
+  status: string;
+}
+
+interface ProjectsProps {
+  portfolios: PortfolioItem[];
+}
+
+export default function Projects({ portfolios }: ProjectsProps) {
+  if (!portfolios || portfolios.length === 0) {
+    return (
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center"
+          >
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Projects</h2>
+            <p className="text-gray-600 mb-8">No projects available at the moment.</p>
+          </motion.div>
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <section id="projects" className="py-24 bg-background relative overflow-hidden">
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="text-center mb-20">
-          <div className="inline-flex items-center bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
-            <Smartphone size={16} className="mr-2 text-black/60 dark:text-white/60" />
-            <span className="text-black dark:text-white">Our Creations</span>
-          </div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-8 text-black dark:text-white">
-            Innovative Projects
-          </h2>
-          <p className="text-xl text-black/60 dark:text-white/60 max-w-3xl mx-auto">
-            Discover our portfolio of collaborative tech solutions transforming industries and empowering users.
+    <section className="py-16 bg-gray-50">
+      <div className="container mx-auto px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Projects</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Explore our portfolio of successful projects and innovative solutions that showcase our expertise and creativity.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project, index) => {
-            const IconComponent = project.icon;
-            return (
-              <div key={index}>
-                <Card className="group card hover:shadow-2xl transition-all duration-500 hover:scale-105">
-                  <div className="relative overflow-hidden">
-                    <Image 
-                      src={project.image} 
-                      alt={project.title}
-                      width={600}
-                      height={400}
-                      className="w-full h-56 object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                    <div className={`absolute inset-0 ${project.gradient} opacity-20 group-hover:opacity-40 transition-opacity duration-300`}></div>
-                    <div className="absolute top-4 left-4 bg-white/90 px-3 py-1 rounded-full text-xs font-medium text-black dark:text-white">
-                      {project.category}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {portfolios.map((project, index) => (
+            <motion.div
+              key={project.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <Card className="h-full hover:shadow-lg transition-shadow">
+                <CardHeader className="p-0">
+                  {project.image && (
+                    <div className="aspect-video overflow-hidden rounded-t-lg">
+                      <img
+                        src={project.image}
+                        alt={project.title}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
-                    <div className={`absolute top-4 right-4 w-10 h-10 ${project.gradient} rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300`}>
-                      <IconComponent size={20} className="text-white" />
+                  )}
+                </CardHeader>
+                <CardContent className="p-6">
+                  <CardTitle className="text-xl mb-2">{project.title}</CardTitle>
+                  <CardDescription className="mb-4">
+                    {project.description}
+                  </CardDescription>
+                  
+                  {project.technologies && (
+                    <div className="mb-4">
+                      <p className="text-sm text-gray-600 mb-2">Technologies:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {project.technologies.split(',').map((tech, techIndex) => (
+                          <span
+                            key={techIndex}
+                            className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full"
+                          >
+                            {tech.trim()}
+                          </span>
+                        ))}
+                      </div>
                     </div>
+                  )}
+
+                  <div className="flex gap-2">
+                    {project.project_url && (
+                      <Button size="sm" variant="outline" asChild>
+                        <a href={project.project_url} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink size={16} className="mr-2" />
+                          Live Demo
+                        </a>
+                      </Button>
+                    )}
+                    {project.github_url && (
+                      <Button size="sm" variant="outline" asChild>
+                        <a href={project.github_url} target="_blank" rel="noopener noreferrer">
+                          <Github size={16} className="mr-2" />
+                          Code
+                        </a>
+                      </Button>
+                    )}
                   </div>
-                  <CardHeader className="pb-4">
-                    <CardTitle className="text-xl font-bold text-black dark:text-white group-hover:text-primary transition-colors">
-                      {project.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <p className="text-black/60 dark:text-white/60 leading-relaxed">
-                      {project.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            );
-          })}
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
   );
-};
-
-export default Projects;
+}
