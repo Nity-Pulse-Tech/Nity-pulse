@@ -16,13 +16,15 @@ export interface Portfolio {
   description: string;
   image?: string;
   link?: string;
-  technologies?: string; // Added
-  github_url?: string; // Added
+  project_url?: string; // ✅ Add this
+  technologies?: string;
+  github_url?: string;
   status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
   user: string;
   created: string;
   modified: string;
 }
+
 
 
 export interface Testimonial {

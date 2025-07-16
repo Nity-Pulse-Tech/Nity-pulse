@@ -33,9 +33,14 @@ export default function DashboardPage() {
       setRecentBlogs(blogs.slice(0, 5));
       setRecentPortfolios(portfolios.slice(0, 5));
       setRecentMessages(messages.slice(0, 5));
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to load dashboard data');
-    } finally {
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('Failed to delete blog post');
+      }
+    }
+     finally {
       setIsLoading(false);
     }
   };
@@ -86,8 +91,9 @@ export default function DashboardPage() {
       >
         <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
         <p className="mt-2 text-gray-600 text-sm">
-          Welcome to your admin dashboard. Here's what's happening with your content.
-        </p>
+            Welcome to your admin dashboard. Here&#39;s what&#39;s happening with your content.
+          </p>
+
       </motion.div>
 
       {/* Stats Grid */}

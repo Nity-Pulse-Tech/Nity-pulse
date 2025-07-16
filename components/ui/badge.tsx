@@ -1,8 +1,6 @@
 import { cn } from "@/lib/utils";
 
-interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-export function Badge({ className, ...props }: BadgeProps) {
+export function Badge({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cn(

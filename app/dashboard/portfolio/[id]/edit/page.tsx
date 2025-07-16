@@ -10,6 +10,7 @@ import { dashboardService } from '@/lib/services/dashboardService';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Upload, Save } from 'lucide-react';
 import Link from 'next/link';
+import { isAxiosError } from '@/utils/errorUtils';
 
 export default function EditPortfolioPage() {
   const router = useRouter();
@@ -41,8 +42,12 @@ export default function EditPortfolioPage() {
           status: portfolio.status,
           image: null,
         });
-      } catch (error: any) {
-        toast.error(error.message || 'Failed to fetch portfolio');
+      } catch (error: unknown) {
+        if (isAxiosError(error)) {
+          toast.error(error.message || 'Failed to fetch portfolio');
+        } else {
+          toast.error('Failed to fetch portfolio');
+        }
         router.push('/dashboard/portfolio');
       } finally {
         setIsFetching(false);
@@ -71,7 +76,7 @@ export default function EditPortfolioPage() {
     setIsLoading(true);
 
     try {
-      const updateData: any = {
+      const updateData = {
         title: formData.title,
         description: formData.description,
         technologies: formData.technologies,
@@ -97,8 +102,12 @@ export default function EditPortfolioPage() {
 
       toast.success('Portfolio updated successfully!');
       router.push('/dashboard/portfolio');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to update portfolio');
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        toast.error(error.message || 'Failed to update portfolio');
+      } else {
+        toast.error('Failed to update portfolio');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -117,7 +126,6 @@ export default function EditPortfolioPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -138,7 +146,6 @@ export default function EditPortfolioPage() {
         </div>
       </motion.div>
 
-      {/* Form */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -273,4 +280,4 @@ export default function EditPortfolioPage() {
       </motion.div>
     </div>
   );
-} 
+}

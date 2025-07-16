@@ -14,7 +14,6 @@ import {
   Calendar,
   User,
   MessageSquare,
-  Eye,
   Reply
 } from 'lucide-react';
 
@@ -38,9 +37,14 @@ export default function MessagesManagementPage() {
       setIsLoading(true);
       const data = await dashboardService.getAllContactMessages();
       setMessages(data);
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to load messages');
-    } finally {
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('Failed to delete ');
+      }
+    }
+     finally {
       setIsLoading(false);
     }
   };
@@ -71,9 +75,14 @@ export default function MessagesManagementPage() {
       toast.success('Message deleted successfully');
       loadMessages(); // Reload the list
       setSelectedMessage(null);
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to delete message');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('Failed to ');
+      }
     }
+    
   };
 
   const formatDate = (dateString: string) => {

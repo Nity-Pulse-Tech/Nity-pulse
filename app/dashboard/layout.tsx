@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
 import { Menu } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Sidebar from './_components/Sidebar';

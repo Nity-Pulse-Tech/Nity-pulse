@@ -4,13 +4,14 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { UpdateBlogData } from '@/lib/types/dashboard'; // Add this import
+import { UpdateBlogData } from '@/lib/types/dashboard';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { dashboardService } from '@/lib/services/dashboardService';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Upload, Save } from 'lucide-react';
 import Link from 'next/link';
+import { isAxiosError } from '@/utils/errorUtils';
 
 export default function EditBlogPage() {
   const router = useRouter();
@@ -36,8 +37,12 @@ export default function EditBlogPage() {
           status: blog.status,
           image: null,
         });
-      } catch (error: any) {
-        toast.error(error.message || 'Failed to fetch blog');
+      } catch (error: unknown) {
+        if (isAxiosError(error)) {
+          toast.error(error.message || 'Failed to fetch blog');
+        } else {
+          toast.error('Failed to fetch blog');
+        }
         router.push('/dashboard/blog');
       } finally {
         setIsFetching(false);
@@ -61,37 +66,40 @@ export default function EditBlogPage() {
     }
   };
 
-  // app/dashboard/blog/[id]/edit/page.tsx
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setIsLoading(true);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
 
-  try {
-    if (formData.image) {
-      const formDataToSend = new FormData();
-      formDataToSend.append('title', formData.title);
-      formDataToSend.append('content', formData.content);
-      formDataToSend.append('status', formData.status);
-      formDataToSend.append('image', formData.image);
-      await dashboardService.updateBlog(blogId, formDataToSend);
-    } else {
-      const updateData: UpdateBlogData = {
-        title: formData.title,
-        content: formData.content,
-        status: formData.status as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED',
-        image: null, // Explicitly set image to null
-      };
-      await dashboardService.updateBlog(blogId, updateData);
+    try {
+      if (formData.image) {
+        const formDataToSend = new FormData();
+        formDataToSend.append('title', formData.title);
+        formDataToSend.append('content', formData.content);
+        formDataToSend.append('status', formData.status);
+        formDataToSend.append('image', formData.image);
+        await dashboardService.updateBlog(blogId, formDataToSend);
+      } else {
+        const updateData: UpdateBlogData = {
+          title: formData.title,
+          content: formData.content,
+          status: formData.status as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED',
+          image: null,
+        };
+        await dashboardService.updateBlog(blogId, updateData);
+      }
+
+      toast.success('Blog updated successfully!');
+      router.push('/dashboard/blog');
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        toast.error(error.message || 'Failed to update blog');
+      } else {
+        toast.error('Failed to update blog');
+      }
+    } finally {
+      setIsLoading(false);
     }
-
-    toast.success('Blog updated successfully!');
-    router.push('/dashboard/blog');
-  } catch (error: any) {
-    toast.error(error.message || 'Failed to update blog');
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   if (isFetching) {
     return (
@@ -106,7 +114,6 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -127,7 +134,6 @@ const handleSubmit = async (e: React.FormEvent) => {
         </div>
       </motion.div>
 
-      {/* Form */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -222,4 +228,4 @@ const handleSubmit = async (e: React.FormEvent) => {
       </motion.div>
     </div>
   );
-} 
+}

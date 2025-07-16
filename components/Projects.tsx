@@ -5,6 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Github } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import Image from 'next/image';
 import Link from 'next/link';
 
 interface PortfolioItem {
@@ -73,11 +74,13 @@ export default function Projects({ portfolios }: ProjectsProps) {
                 <Card className="h-full overflow-hidden bg-white shadow-lg hover:shadow-xl transition-all duration-300 border-0 rounded-xl">
                   <CardHeader className="p-0">
                     <div className="relative aspect-[16/9] overflow-hidden rounded-t-xl">
-                      <img
-                        src={project.image || `https://images.unsplash.com/photo-${1600000000 + index}?w=600&h=400&fit=crop&auto=format`}
-                        alt={project.title}
-                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                      />
+                    <Image
+                          src={project.image || `https://images.unsplash.com/photo-${1600000000 + index}?w=600&h=400&fit=crop&auto=format`}
+                          alt={project.title}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          className="object-cover transition-transform duration-300 hover:scale-105"
+                        />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
                     </div>
                   </CardHeader>

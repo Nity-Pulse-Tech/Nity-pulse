@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { isAxiosError } from '@/utils/errorUtils';
 
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -52,8 +53,12 @@ export default function RegisterPage() {
       await register(formData);
       toast.success('Registration successful! Please log in.');
       router.push('/login');
-    } catch (error: any) {
-      toast.error(error.message || 'Registration failed');
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        toast.error(error.message || 'Registration failed');
+      } else {
+        toast.error('Registration failed');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -186,4 +191,4 @@ export default function RegisterPage() {
       </motion.div>
     </div>
   );
-} 
+}

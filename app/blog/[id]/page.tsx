@@ -1,9 +1,10 @@
-// app/blog/[id]/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
+import type { NextPage } from 'next';
 import { publicApi } from '@/lib/api';
 import BlogPostClient from './BlogPostClient';
+import { isAxiosError } from '@/utils/errorUtils';
 
 interface BlogPost {
   id: string;
@@ -17,22 +18,30 @@ interface BlogPost {
   read_time?: string;
 }
 
-interface BlogPostProps {
-  params: Promise<{ id: string }>;
-}
+type BlogPageProps = {
+  params: { id: string };
+};
 
-export default function BlogPost({ params }: BlogPostProps) {
+const BlogPost: NextPage<BlogPageProps> = ({ params }) => {
+  const { id } = params;
   const [post, setPost] = useState<BlogPost | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchPost = async () => {
-      const { id } = await params;
       try {
         const response = await publicApi.get(`/api/core/blog/${id}/`);
         setPost(response.data);
-      } catch (error) {
-        console.error('Error fetching blog post:', error);
+      } catch (error: unknown) {
+        if (isAxiosError(error)) {
+          console.error('Error fetching blog post:', {
+            message: error.message,
+            response: error.response?.data,
+            status: error.response?.status,
+          });
+        } else {
+          console.error('Unknown error fetching blog post:', error);
+        }
         setPost(null);
       } finally {
         setIsLoading(false);
@@ -40,7 +49,7 @@ export default function BlogPost({ params }: BlogPostProps) {
     };
 
     fetchPost();
-  }, [params]);
+  }, [id]);
 
   if (isLoading) {
     return (
@@ -53,5 +62,18 @@ export default function BlogPost({ params }: BlogPostProps) {
     );
   }
 
+  if (!post) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center text-gray-600">
+          <h2 className="text-xl font-semibold mb-2">Blog post not found</h2>
+          <p>It might have been deleted or doesn&apos;t exist.</p>
+        </div>
+      </div>
+    );
+  }
+
   return <BlogPostClient post={post} />;
-}
+};
+
+export default BlogPost;

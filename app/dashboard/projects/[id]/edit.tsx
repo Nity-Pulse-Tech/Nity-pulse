@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -11,7 +11,6 @@ const initialProjects = [
 ];
 
 export default function EditProject() {
-  const router = useRouter();
   const params = useParams();
   const project = initialProjects.find(p => p.id === params?.id) || initialProjects[0];
   const [form, setForm] = useState({ ...project });

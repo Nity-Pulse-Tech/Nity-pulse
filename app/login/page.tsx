@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { isAxiosError } from '@/utils/errorUtils';
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -47,8 +48,12 @@ export default function LoginPage() {
         toast.success('Login successful!');
       }
       router.push(redirectTo);
-    } catch (error: any) {
-      toast.error(error.message || 'Login failed');
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        toast.error(error.message || 'Login failed');
+      } else {
+        toast.error('Login failed');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -124,8 +129,9 @@ export default function LoginPage() {
           </div>
 
           <div className="mt-8 text-center">
-            <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
+          <p className="text-sm text-gray-600">
+              Don&apos;t have an account?{' '}
+
               <Link href="/register" className="text-purple-600 hover:text-purple-700 font-medium">
                 Sign up
               </Link>

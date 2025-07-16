@@ -26,7 +26,7 @@ class AuthService {
     try {
       const response = await publicApi.post<User>('/api/core/register/', userData);
       return response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw this.handleError(error);
     }
   }
@@ -40,7 +40,7 @@ class AuthService {
       this.setTokens(response.data.access, response.data.refresh);
       this.setUser(response.data.user);
       return response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw this.handleError(error);
     }
   }
@@ -54,7 +54,7 @@ class AuthService {
       this.setTokens(response.data.access, response.data.refresh);
       this.setUser(response.data.user);
       return response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw this.handleError(error);
     }
   }
@@ -66,7 +66,7 @@ class AuthService {
     try {
       const response = await authApi.get<User>('/api/core/profile/');
       return response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw this.handleError(error);
     }
   }
@@ -78,7 +78,7 @@ class AuthService {
     try {
       const response = await authApi.get<User>('/api/core/admin/profile/');
       return response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw this.handleError(error);
     }
   }
@@ -138,14 +138,23 @@ class AuthService {
   /**
    * Handle API errors
    */
-  private handleError(error: any): Error {
-    if (error.response?.data) {
-      const apiError = error.response.data as ApiError;
+  private handleError(error: unknown): Error {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'response' in error &&
+      typeof error.response === 'object' &&
+      error.response !== null &&
+      'data' in error.response
+    ) {
+      const apiError = (error as { response: { data: ApiError } }).response.data;
       const errorMessage = this.formatApiError(apiError);
       return new Error(errorMessage);
     }
-    return new Error(error.message || 'An unexpected error occurred');
+  
+    return new Error((error as Error)?.message || 'An unexpected error occurred');
   }
+  
 
   /**
    * Format API error messages

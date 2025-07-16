@@ -14,11 +14,11 @@ import {
   Edit, 
   Trash2, 
   MessageSquare,
-  Calendar,
   Filter,
   User,
   Quote
 } from 'lucide-react';
+import { isAxiosError } from '@/utils/errorUtils';
 
 export default function TestimonialsManagementPage() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
@@ -40,8 +40,12 @@ export default function TestimonialsManagementPage() {
       setIsLoading(true);
       const data = await dashboardService.getAllTestimonials();
       setTestimonials(data);
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to load testimonials');
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        toast.error(error.message || 'Failed to load testimonials');
+      } else {
+        toast.error('Failed to load testimonials');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -75,8 +79,12 @@ export default function TestimonialsManagementPage() {
       await dashboardService.deleteTestimonial(id);
       toast.success('Testimonial deleted successfully');
       loadTestimonials(); // Reload the list
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to delete testimonial');
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        toast.error(error.message || 'Failed to delete testimonial');
+      } else {
+        toast.error('Failed to delete testimonial');
+      }
     }
   };
 
@@ -274,4 +282,4 @@ export default function TestimonialsManagementPage() {
       </motion.div>
     </div>
   );
-} 
+}

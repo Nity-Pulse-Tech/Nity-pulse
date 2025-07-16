@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { publicApi, authApi } from '@/lib/api';
+import { isAxiosError } from '@/utils/errorUtils';
 
 interface BlogPost {
   id: string;
@@ -35,13 +36,20 @@ export default function BlogPage() {
       try {
         const response = await publicApi.get('/api/core/blog/');
         setBlogs(response.data);
-        const initialReactions = response.data.reduce((acc: any, post: BlogPost) => ({
-          ...acc,
-          [post.id]: { likes: 0, loves: 0 }
-        }), {});
+        const initialReactions = response.data.reduce(
+          (acc: { [key: string]: { likes: number; loves: number } }, post: BlogPost) => ({
+            ...acc,
+            [post.id]: { likes: 0, loves: 0 }
+          }),
+          {}
+        );        
         setReactions(initialReactions);
-      } catch (error) {
-        console.error('Error fetching blogs:', error);
+      } catch (error: unknown) {
+        if (isAxiosError(error)) {
+          console.error('Error fetching blogs:', error.message);
+        } else {
+          console.error('Unknown error fetching blogs:', error);
+        }
         setBlogs([]);
       } finally {
         setIsLoading(false);
@@ -70,13 +78,17 @@ export default function BlogPage() {
           [type === 'like' ? 'likes' : 'loves']: prev[postId][type === 'like' ? 'likes' : 'loves'] + 1,
         },
       }));
-    } catch (error: any) {
-      console.error('Error sending reaction:', error);
-      if (error.response?.status === 401) {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        localStorage.removeItem('user');
-        window.location.href = '/login';
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        console.error('Error sending reaction:', error.message);
+        if (error.response?.status === 401) {
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          localStorage.removeItem('user');
+          window.location.href = '/login';
+        }
+      } else {
+        console.error('Unknown error sending reaction:', error);
       }
     }
   };
@@ -228,8 +240,10 @@ export default function BlogPage() {
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Want to Collaborate?</h2>
           <p className="text-xl text-white/90 max-w-3xl mx-auto mb-8">
-            Share your ideas with us and let's create something extraordinary together.
+            Share your ideas with us and let&apos;s create something extraordinary together.
           </p>
+
+
           <Link href="/#contact">
             <Button size="lg" className="btn-secondary">
               Get in Touch

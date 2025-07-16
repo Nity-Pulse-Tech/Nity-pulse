@@ -12,6 +12,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Upload, Save, Star } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { isAxiosError } from '@/utils/errorUtils';
 
 export default function EditTestimonialPage() {
   const router = useRouter();
@@ -48,13 +49,18 @@ export default function EditTestimonialPage() {
         if (testimonial.image) {
           setImagePreview(testimonial.image);
         }
-      } catch (error: any) {
-        console.error('Fetch testimonial error:', {
-          message: error.message,
-          response: error.response?.data,
-          status: error.response?.status,
-        });
-        toast.error(error.message || 'Failed to fetch testimonial');
+      } catch (error: unknown) {
+        if (isAxiosError(error)) {
+          console.error('Fetch testimonial error:', {
+            message: error.message,
+            response: error.response?.data,
+            status: error.response?.status,
+          });
+          toast.error(error.message || 'Failed to fetch testimonial');
+        } else {
+          console.error('Unknown error fetching testimonial:', error);
+          toast.error('Failed to fetch testimonial');
+        }
         router.push('/dashboard/testimonials');
       } finally {
         setIsFetching(false);
@@ -132,20 +138,25 @@ export default function EditTestimonialPage() {
 
       toast.success('Testimonial updated successfully!');
       router.push('/dashboard/testimonials');
-    } catch (error: any) {
-      console.error('Submission error:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-      });
-      const errorMessage =
-        error.response?.status === 401
-          ? 'Authentication failed. Please log in again.'
-          : error.response?.data?.message ||
-            error.response?.data?.non_field_errors?.[0] ||
-            Object.values(error.response?.data || {})[0]?.[0] ||
-            'Failed to update testimonial';
-      toast.error(errorMessage);
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        console.error('Submission error:', {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status,
+        });
+        const errorMessage =
+          error.response?.status === 401
+            ? 'Authentication failed. Please log in again.'
+            : error.response?.data?.message ||
+              error.response?.data?.non_field_errors?.[0] ||
+              Object.values(error.response?.data || {})[0] ||
+              'Failed to update testimonial';
+        toast.error(errorMessage);
+      } else {
+        console.error('Unknown error updating testimonial:', error);
+        toast.error('Failed to update testimonial');
+      }
     } finally {
       setIsLoading(false);
     }

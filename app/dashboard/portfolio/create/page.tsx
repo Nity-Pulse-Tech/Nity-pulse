@@ -10,6 +10,7 @@ import { dashboardService } from '@/lib/services/dashboardService';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Upload, Save } from 'lucide-react';
 import Link from 'next/link';
+import { isAxiosError } from '@/utils/errorUtils';
 
 export default function CreatePortfolioPage() {
   const router = useRouter();
@@ -18,10 +19,10 @@ export default function CreatePortfolioPage() {
     title: '',
     description: '',
     technologies: '',
-    link: '', // Changed from project_url
+    link: '',
     github_url: '',
     image: null as File | null,
-    status: 'DRAFT' as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED', // Added
+    status: 'DRAFT' as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -49,9 +50,9 @@ export default function CreatePortfolioPage() {
       formDataToSend.append('title', formData.title);
       formDataToSend.append('description', formData.description);
       formDataToSend.append('technologies', formData.technologies);
-      formDataToSend.append('project_url', formData.link); // Map to project_url for serializer
+      formDataToSend.append('project_url', formData.link);
       formDataToSend.append('github_url', formData.github_url);
-      formDataToSend.append('status', formData.status); // Added
+      formDataToSend.append('status', formData.status);
       if (formData.image) {
         formDataToSend.append('image', formData.image);
       }
@@ -60,19 +61,24 @@ export default function CreatePortfolioPage() {
       await dashboardService.createPortfolio(formDataToSend);
       toast.success('Portfolio item created successfully!');
       router.push('/dashboard/portfolio');
-    } catch (error: any) {
-      console.error('Submission error:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-      });
-      toast.error(
-        error.response?.data?.message ||
-        error.response?.data?.non_field_errors?.[0] ||
-        Object.values(error.response?.data || {})[0]?.[0] ||
-        error.message ||
-        'Failed to create portfolio item'
-      );
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        console.error('Submission error:', {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status,
+        });
+        toast.error(
+          error.response?.data?.message ||
+          error.response?.data?.non_field_errors?.[0] ||
+          Object.values(error.response?.data || {})[0]?.[0] ||
+          error.message ||
+          'Failed to create portfolio item'
+        );
+      } else {
+        console.error('Unknown error creating portfolio:', error);
+        toast.error('Failed to create portfolio item');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -152,7 +158,7 @@ export default function CreatePortfolioPage() {
                 Project URL
               </label>
               <Input
-                name="link" // Changed from project_url
+                name="link"
                 type="url"
                 value={formData.link}
                 onChange={handleInputChange}

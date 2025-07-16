@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star } from 'lucide-react';
+import Image from 'next/image';
 
 interface Testimonial {
   id: string;
@@ -49,8 +50,9 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
         >
           <h2 className="text-3xl font-bold text-gray-900 mb-4">What Our Clients Say</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Don't just take our word for it. Here's what our clients have to say about working with us.
-          </p>
+  Don&apos;t just take our word for it. Here&apos;s what our clients have to say about working with us.
+</p>
+
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -77,15 +79,18 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
                     ))}
                   </div>
                   <blockquote className="text-gray-700 mb-6 italic">
-                    "{testimonial.content}"
-                  </blockquote>
+  &ldquo;{testimonial.content}&rdquo;
+</blockquote>
+
                   <div className="flex items-center">
                     {testimonial.image ? (
-                      <img
-                        src={testimonial.image}
-                        alt={testimonial.name}
-                        className="w-12 h-12 rounded-full object-cover mr-4"
-                      />
+                      <Image
+                      src={testimonial.image}
+                      alt={testimonial.name}
+                      width={48}
+                      height={48}
+                      className="rounded-full object-cover mr-4"
+                    />
                     ) : (
                       <div className="w-12 h-12 rounded-full bg-gray-200 mr-4 flex items-center justify-center">
                         <span className="text-gray-600">{testimonial.name[0]}</span>

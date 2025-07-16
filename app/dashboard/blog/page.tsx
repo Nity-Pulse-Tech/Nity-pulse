@@ -39,8 +39,13 @@ export default function BlogManagementPage() {
       setIsLoading(true);
       const data = await dashboardService.getAllBlogs();
       setBlogs(data);
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to load blogs');
+    }  catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('Failed to load blogs');
+      }
+    
     } finally {
       setIsLoading(false);
     }
@@ -74,9 +79,14 @@ export default function BlogManagementPage() {
       await dashboardService.deleteBlog(id);
       toast.success('Blog post deleted successfully');
       loadBlogs(); // Reload the list
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to delete blog post');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('Failed to delete blog post');
+      }
     }
+    
   };
 
   const formatDate = (dateString: string) => {

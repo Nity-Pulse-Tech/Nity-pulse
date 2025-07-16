@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Calendar, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface BlogPost {
   id: string;
@@ -67,11 +68,17 @@ export default function Blog({ blogs }: BlogProps) {
               <Card className="h-full hover:shadow-lg transition-shadow">
                 <CardHeader className="p-0">
                   <div className="aspect-video overflow-hidden rounded-t-lg">
-                    <img
+                 
+
+                 
+                    <Image
                       src={post.image || `https://images.unsplash.com/photo-${1600000000 + index}?w=600&h=400&fit=crop`}
                       alt={post.title}
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-cover rounded-t-lg"
                     />
+
                   </div>
                 </CardHeader>
                 <CardContent className="p-6">

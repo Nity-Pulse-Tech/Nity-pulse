@@ -39,7 +39,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           try {
             const profile = await authService.getProfile();
             setUser(profile);
-          } catch (error) {
+          } catch  {
             // If profile fetch fails, logout
             authService.logout();
             setUser(null);

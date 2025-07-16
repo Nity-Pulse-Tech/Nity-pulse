@@ -40,8 +40,12 @@ export default function PortfolioManagementPage() {
       setIsLoading(true);
       const data = await dashboardService.getAllPortfolios();
       setPortfolios(data);
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to load portfolios');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('Failed to delete ');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -75,9 +79,14 @@ export default function PortfolioManagementPage() {
       await dashboardService.deletePortfolio(id);
       toast.success('Portfolio item deleted successfully');
       loadPortfolios(); // Reload the list
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to delete portfolio item');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('Failed to delete ');
+      }
     }
+    
   };
 
   const formatDate = (dateString: string) => {

@@ -40,5 +40,5 @@ export interface ApiError {
   password_confirm?: string[];
   first_name?: string[];
   last_name?: string[];
-  [key: string]: any;
-} 
+  [key: string]: string | string[] | undefined;
+}

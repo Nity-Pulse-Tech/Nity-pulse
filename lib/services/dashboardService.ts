@@ -7,11 +7,10 @@ import {
   DashboardStats,
   CreateBlogData,
   UpdateBlogData,
-  CreatePortfolioData,
   UpdatePortfolioData,
-  CreateTestimonialData,
   UpdateTestimonialData,
 } from '../types/dashboard';
+import { AxiosErrorResponse } from '../types/error';
 
 class DashboardService {
   private static instance: DashboardService;
@@ -25,7 +24,6 @@ class DashboardService {
     return DashboardService.instance;
   }
 
-  // Dashboard Stats
   async getDashboardStats(): Promise<DashboardStats> {
     try {
       const [blogs, portfolios, testimonials, messages] = await Promise.all([
@@ -36,7 +34,7 @@ class DashboardService {
       ]);
 
       return {
-        totalUsers: 0, // Would need a separate endpoint
+        totalUsers: 0,
         totalBlogs: blogs.length,
         totalPortfolios: portfolios.length,
         totalTestimonials: testimonials.length,
@@ -45,18 +43,19 @@ class DashboardService {
         publishedPortfolios: portfolios.filter(portfolio => portfolio.status === 'PUBLISHED').length,
         publishedTestimonials: testimonials.filter(testimonial => testimonial.status === 'PUBLISHED').length,
       };
-    } catch (error: any) {
-      throw new Error(error.message || 'Failed to fetch dashboard stats');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch dashboard stats';
+      throw new Error(errorMessage);
     }
   }
 
-  // Blog Management
   async getAllBlogs(): Promise<Blog[]> {
     try {
       const response = await authApi.get<Blog[]>('/api/core/blog/');
       return response.data;
-    } catch (error: any) {
-      throw new Error(error.message || 'Failed to fetch blogs');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch blogs';
+      throw new Error(errorMessage);
     }
   }
 
@@ -64,8 +63,9 @@ class DashboardService {
     try {
       const response = await authApi.get<Blog>(`/api/core/blog/${id}/`);
       return response.data;
-    } catch (error: any) {
-      throw new Error(error.message || 'Failed to fetch blog');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch blog';
+      throw new Error(errorMessage);
     }
   }
 
@@ -85,48 +85,43 @@ class DashboardService {
         },
       });
       return response.data;
-    } catch (error: any) {
-      throw new Error(error.message || 'Failed to create blog');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create blog';
+      throw new Error(errorMessage);
     }
   }
 
   async updateBlog(id: string, data: UpdateBlogData | FormData): Promise<Blog> {
     try {
-      if (data instanceof FormData) {
-        const response = await authApi.put<Blog>(`/api/core/blog/${id}/`, data, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-        return response.data;
-      } else {
-        const response = await authApi.put<Blog>(`/api/core/blog/${id}/`, data, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        return response.data;
-      }
-    } catch (error: any) {
-      throw new Error(error.message || 'Failed to update blog');
+      const headers =
+        data instanceof FormData
+          ? { 'Content-Type': 'multipart/form-data' }
+          : { 'Content-Type': 'application/json' };
+
+      const response = await authApi.put<Blog>(`/api/core/blog/${id}/`, data, { headers });
+      return response.data;
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update blog';
+      throw new Error(errorMessage);
     }
   }
 
   async deleteBlog(id: string): Promise<void> {
     try {
       await authApi.delete(`/api/core/blog/${id}/`);
-    } catch (error: any) {
-      throw new Error(error.message || 'Failed to delete blog');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete blog';
+      throw new Error(errorMessage);
     }
   }
 
-  // Portfolio Management
   async getAllPortfolios(): Promise<Portfolio[]> {
     try {
       const response = await authApi.get<Portfolio[]>('/api/portfolio/portfolios/');
       return response.data;
-    } catch (error: any) {
-      throw new Error(error.message || 'Failed to fetch portfolios');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch portfolios';
+      throw new Error(errorMessage);
     }
   }
 
@@ -134,33 +129,30 @@ class DashboardService {
     try {
       const response = await authApi.get<Portfolio>(`/api/portfolio/portfolios/${id}/`);
       return response.data;
-    } catch (error: any) {
-      throw new Error(error.message || 'Failed to fetch portfolio');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch portfolio';
+      throw new Error(errorMessage);
     }
   }
 
   async createPortfolio(data: FormData): Promise<Portfolio> {
     try {
-      console.log('Sending create portfolio request:', Object.fromEntries(data));
       const response = await authApi.post<Portfolio>('/api/portfolio/portfolios/', data, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
-      console.log('Portfolio created:', response.data);
       return response.data;
-    } catch (error: any) {
-      console.error('Create portfolio error:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-      });
-      throw new Error(
-        error.response?.data?.message ||
-        error.response?.data?.non_field_errors?.[0] ||
-        Object.values(error.response?.data || {})[0] ||
-        'Failed to create portfolio'
-      );
+    } catch (error: unknown) {
+      const err = error as AxiosErrorResponse;
+      const data = err.response?.data;
+
+      const fallback = data && Object.values(data)[0];
+      const message =
+        data?.message ||
+        data?.non_field_errors?.[0] ||
+        (Array.isArray(fallback) ? fallback[0] : fallback) ||
+        'Failed to create portfolio';
+
+      throw new Error(message);
     }
   }
 
@@ -174,38 +166,34 @@ class DashboardService {
       if (data.link) formData.append('link', data.link);
 
       const response = await authApi.put<Portfolio>(`/api/portfolio/portfolios/${id}/`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data;
-    } catch (error: any) {
-      throw new Error(error.message || 'Failed to update portfolio');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update portfolio';
+      throw new Error(errorMessage);
     }
   }
 
   async deletePortfolio(id: string): Promise<void> {
     try {
       await authApi.delete(`/api/portfolio/portfolios/${id}/`);
-    } catch (error: any) {
-      throw new Error(error.message || 'Failed to delete portfolio');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete portfolio';
+      throw new Error(errorMessage);
     }
   }
 
-  // Testimonial Management
   async getAllTestimonials(isAdmin: boolean = false): Promise<Testimonial[]> {
     try {
       const url = isAdmin ? '/api/core/testimonial/?status=all' : '/api/core/testimonial/';
       const response = await authApi.get<Testimonial[]>(url);
-      console.log('Fetched testimonials:', response.data);
       return response.data;
-    } catch (error: any) {
-      console.error('Fetch testimonials error:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-      });
-      throw new Error(error.message || 'Failed to fetch testimonials');
+    } catch (error: unknown) {
+      const err = error as AxiosErrorResponse;
+      const data = err.response?.data;
+      const message = data?.message || 'Failed to fetch testimonials';
+      throw new Error(message);
     }
   }
 
@@ -213,74 +201,65 @@ class DashboardService {
     try {
       const response = await authApi.get<Testimonial>(`/api/core/testimonial/${id}/`);
       return response.data;
-    } catch (error: any) {
-      throw new Error(error.message || 'Failed to fetch testimonial');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch testimonial';
+      throw new Error(errorMessage);
     }
   }
 
   async createTestimonial(data: FormData): Promise<Testimonial> {
     try {
       const response = await authApi.post<Testimonial>('/api/core/testimonial/', data, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data;
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Failed to create testimonial');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create testimonial';
+      throw new Error(errorMessage);
     }
   }
 
   async updateTestimonial(id: string, data: UpdateTestimonialData | FormData): Promise<Testimonial> {
     try {
-      console.log('Sending update request for testimonial:', id, data instanceof FormData ? 'FormData' : data);
-  
-      const headers = data instanceof FormData
-        ? { 'Content-Type': 'multipart/form-data' }
-        : { 'Content-Type': 'application/json' };
-  
+      const headers =
+        data instanceof FormData
+          ? { 'Content-Type': 'multipart/form-data' }
+          : { 'Content-Type': 'application/json' };
+
       const response = await authApi.put<Testimonial>(`/api/core/testimonial/${id}/`, data, { headers });
-  
       return response.data;
-  
-    } catch (error: any) {
-      console.error('Update testimonial error:', {
-        message: error?.message,
-        response: error?.response?.data,
-        status: error?.response?.status,
-      });
-  
-      const fallbackError =
-        typeof error?.response?.data === 'object'
-          ? Object.values(error.response.data)[0]
-          : null;
-  
+    } catch (error: unknown) {
+      const err = error as AxiosErrorResponse;
+      const response = err.response;
+      const data = response?.data;
+      const fallback = data && Object.values(data)[0];
+
       const errorMessage =
-        error?.response?.data?.message ||
-        error?.response?.data?.non_field_errors?.[0] ||
-        (Array.isArray(fallbackError) ? fallbackError[0] : fallbackError) ||
+        data?.message ||
+        data?.non_field_errors?.[0] ||
+        (Array.isArray(fallback) ? fallback[0] : fallback) ||
         'Failed to update testimonial';
-  
+
       throw new Error(errorMessage);
     }
   }
-  
 
   async deleteTestimonial(id: string): Promise<void> {
     try {
       await authApi.delete(`/api/core/testimonial/${id}/`);
-    } catch (error: any) {
-      throw new Error(error.message || 'Failed to delete testimonial');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete testimonial';
+      throw new Error(errorMessage);
     }
   }
 
-  // Contact Messages
   async getAllContactMessages(): Promise<ContactMessage[]> {
     try {
       const response = await authApi.get<ContactMessage[]>('/api/core/contact/');
       return response.data;
-    } catch (error: any) {
-      throw new Error(error.message || 'Failed to fetch contact messages');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch contact messages';
+      throw new Error(errorMessage);
     }
   }
 
@@ -288,16 +267,18 @@ class DashboardService {
     try {
       const response = await authApi.get<ContactMessage>(`/api/core/contact/${id}/`);
       return response.data;
-    } catch (error: any) {
-      throw new Error(error.message || 'Failed to fetch contact message');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch contact message';
+      throw new Error(errorMessage);
     }
   }
 
   async deleteContactMessage(id: string): Promise<void> {
     try {
       await authApi.delete(`/api/core/contact/${id}/`);
-    } catch (error: any) {
-      throw new Error(error.message || 'Failed to delete contact message');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete contact message';
+      throw new Error(errorMessage);
     }
   }
 }

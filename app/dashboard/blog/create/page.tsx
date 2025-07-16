@@ -9,12 +9,12 @@ import { dashboardService } from '@/lib/services/dashboardService';
 import { CreateBlogData } from '@/lib/types/dashboard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import Image from 'next/image';
+
 import { 
   ArrowLeft, 
   Save, 
-  Upload, 
   X,
-  FileText,
   Image as ImageIcon
 } from 'lucide-react';
 
@@ -79,9 +79,14 @@ export default function CreateBlogPage() {
       await dashboardService.createBlog(blogData);
       toast.success('Blog post created successfully!');
       router.push('/dashboard/blog');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to create blog post');
-    } finally {
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('Failed to delete blog post');
+      }
+    }
+     finally {
       setIsLoading(false);
     }
   };
@@ -157,11 +162,14 @@ export default function CreateBlogPage() {
             <div className="space-y-4">
               {imagePreview ? (
                 <div className="relative">
-                  <img
-                    src={imagePreview}
-                    alt="Preview"
-                    className="w-full h-64 object-cover rounded-lg border border-gray-200"
-                  />
+                  <Image
+                      src={imagePreview}
+                      alt="Preview"
+                      width={800}
+                      height={400}
+                      className="w-full h-64 object-cover rounded-lg border border-gray-200"
+                    />
+
                   <button
                     type="button"
                     onClick={removeImage}
