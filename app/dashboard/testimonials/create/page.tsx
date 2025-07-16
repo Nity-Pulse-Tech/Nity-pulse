@@ -15,11 +15,12 @@ export default function CreateTestimonialPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
+    author_name: '',  // Changed from 'name' to 'author_name'
     position: '',
     company: '',
     content: '',
     rating: 5,
+    status: 'DRAFT',  // Added status field
     image: null as File | null,
   });
 
@@ -45,11 +46,12 @@ export default function CreateTestimonialPage() {
 
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append('name', formData.name);
+      formDataToSend.append('author_name', formData.author_name);  // Changed from 'name'
       formDataToSend.append('position', formData.position);
       formDataToSend.append('company', formData.company);
       formDataToSend.append('content', formData.content);
       formDataToSend.append('rating', formData.rating.toString());
+      formDataToSend.append('status', formData.status);  // Added status
       if (formData.image) {
         formDataToSend.append('image', formData.image);
       }
@@ -95,14 +97,14 @@ export default function CreateTestimonialPage() {
         className="bg-white rounded-lg shadow-md p-6"
       >
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid gzrid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Name *
               </label>
               <Input
-                name="name"
-                value={formData.name}
+                name="author_name"  // Changed from 'name'
+                value={formData.author_name}
                 onChange={handleInputChange}
                 placeholder="Client name"
                 required
@@ -208,18 +210,19 @@ export default function CreateTestimonialPage() {
               </Button>
             </Link>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              ) : (
-                <>
-                  <Save size={16} className="mr-2" />
-                  Create Testimonial
-                </>
-              )}
-            </Button>
+    {isLoading ? (
+      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+    ) : (
+      <>
+        <Save size={16} className="mr-2" />
+        Create Testimonial
+      </>
+    )}
+  </Button>
+
           </div>
         </form>
       </motion.div>
     </div>
   );
-} 
+}

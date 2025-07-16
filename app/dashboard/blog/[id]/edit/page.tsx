@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { UpdateBlogData } from '@/lib/types/dashboard'; // Add this import
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { dashboardService } from '@/lib/services/dashboardService';
@@ -48,7 +49,7 @@ export default function EditBlogPage() {
     }
   }, [blogId, router]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
@@ -60,37 +61,37 @@ export default function EditBlogPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+  // app/dashboard/blog/[id]/edit/page.tsx
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsLoading(true);
 
-    try {
-      const updateData: any = {
+  try {
+    if (formData.image) {
+      const formDataToSend = new FormData();
+      formDataToSend.append('title', formData.title);
+      formDataToSend.append('content', formData.content);
+      formDataToSend.append('status', formData.status);
+      formDataToSend.append('image', formData.image);
+      await dashboardService.updateBlog(blogId, formDataToSend);
+    } else {
+      const updateData: UpdateBlogData = {
         title: formData.title,
         content: formData.content,
-        status: formData.status,
+        status: formData.status as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED',
+        image: null, // Explicitly set image to null
       };
-
-      if (formData.image) {
-        const formDataToSend = new FormData();
-        formDataToSend.append('title', formData.title);
-        formDataToSend.append('content', formData.content);
-        formDataToSend.append('status', formData.status);
-        formDataToSend.append('image', formData.image);
-        
-        await dashboardService.updateBlog(blogId, formDataToSend);
-      } else {
-        await dashboardService.updateBlog(blogId, updateData);
-      }
-
-      toast.success('Blog updated successfully!');
-      router.push('/dashboard/blog');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to update blog');
-    } finally {
-      setIsLoading(false);
+      await dashboardService.updateBlog(blogId, updateData);
     }
-  };
+
+    toast.success('Blog updated successfully!');
+    router.push('/dashboard/blog');
+  } catch (error: any) {
+    toast.error(error.message || 'Failed to update blog');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   if (isFetching) {
     return (

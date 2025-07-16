@@ -16,11 +16,14 @@ export interface Portfolio {
   description: string;
   image?: string;
   link?: string;
+  technologies?: string; // Added
+  github_url?: string; // Added
   status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
   user: string;
   created: string;
   modified: string;
 }
+
 
 export interface Testimonial {
   id: string;
@@ -63,17 +66,10 @@ export interface CreateBlogData {
 export interface UpdateBlogData {
   title?: string;
   content?: string;
-  image?: File;
+  image?: File | null;
   status?: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
 }
 
-export interface CreatePortfolioData {
-  title: string;
-  description: string;
-  image?: File;
-  link?: string;
-  status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
-}
 
 export interface UpdatePortfolioData {
   title?: string;
@@ -90,7 +86,22 @@ export interface CreateTestimonialData {
 }
 
 export interface UpdateTestimonialData {
+  name?: string;
   content?: string;
-  author_name?: string;
   status?: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
-} 
+  position?: string;
+  company?: string;
+  rating?: number;
+  image?: File | null;
+}
+
+
+export interface CreatePortfolioData {
+  title: string;
+  description: string;
+  image?: File;
+  link?: string; // Changed from project_url
+  technologies?: string; // Added
+  github_url?: string; // Added
+  status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+}

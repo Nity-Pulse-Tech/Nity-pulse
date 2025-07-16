@@ -11,8 +11,11 @@ interface BlogPost {
   title: string;
   content: string;
   image?: string;
-  created_at: string;
+  created: string;
   status: string;
+  author: string;
+  category?: string;
+  read_time?: string;
 }
 
 interface BlogProps {
@@ -63,20 +66,18 @@ export default function Blog({ blogs }: BlogProps) {
             >
               <Card className="h-full hover:shadow-lg transition-shadow">
                 <CardHeader className="p-0">
-                  {post.image && (
-                    <div className="aspect-video overflow-hidden rounded-t-lg">
-                      <img
-                        src={post.image}
-                        alt={post.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )}
+                  <div className="aspect-video overflow-hidden rounded-t-lg">
+                    <img
+                      src={post.image || `https://images.unsplash.com/photo-${1600000000 + index}?w=600&h=400&fit=crop`}
+                      alt={post.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 </CardHeader>
                 <CardContent className="p-6">
                   <div className="flex items-center text-sm text-gray-500 mb-3">
                     <Calendar size={16} className="mr-2" />
-                    {new Date(post.created_at).toLocaleDateString('en-US', {
+                    {new Date(post.created).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric'

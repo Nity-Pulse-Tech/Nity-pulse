@@ -18,12 +18,13 @@ export default function CreatePortfolioPage() {
     title: '',
     description: '',
     technologies: '',
-    project_url: '',
+    link: '', // Changed from project_url
     github_url: '',
     image: null as File | null,
+    status: 'DRAFT' as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED', // Added
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
@@ -37,24 +38,41 @@ export default function CreatePortfolioPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    if (!formData.title || !formData.description) {
+      toast.error('Please fill in all required fields.');
+      return;
+    }
 
+    setIsLoading(true);
     try {
       const formDataToSend = new FormData();
       formDataToSend.append('title', formData.title);
       formDataToSend.append('description', formData.description);
       formDataToSend.append('technologies', formData.technologies);
-      formDataToSend.append('project_url', formData.project_url);
+      formDataToSend.append('project_url', formData.link); // Map to project_url for serializer
       formDataToSend.append('github_url', formData.github_url);
+      formDataToSend.append('status', formData.status); // Added
       if (formData.image) {
         formDataToSend.append('image', formData.image);
       }
 
+      console.log('Submitting portfolio:', Object.fromEntries(formDataToSend));
       await dashboardService.createPortfolio(formDataToSend);
       toast.success('Portfolio item created successfully!');
       router.push('/dashboard/portfolio');
     } catch (error: any) {
-      toast.error(error.message || 'Failed to create portfolio item');
+      console.error('Submission error:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
+      toast.error(
+        error.response?.data?.message ||
+        error.response?.data?.non_field_errors?.[0] ||
+        Object.values(error.response?.data || {})[0]?.[0] ||
+        error.message ||
+        'Failed to create portfolio item'
+      );
     } finally {
       setIsLoading(false);
     }
@@ -62,7 +80,6 @@ export default function CreatePortfolioPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -83,7 +100,6 @@ export default function CreatePortfolioPage() {
         </div>
       </motion.div>
 
-      {/* Form */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -136,9 +152,9 @@ export default function CreatePortfolioPage() {
                 Project URL
               </label>
               <Input
-                name="project_url"
+                name="link" // Changed from project_url
                 type="url"
-                value={formData.project_url}
+                value={formData.link}
                 onChange={handleInputChange}
                 placeholder="https://example.com"
               />
@@ -155,6 +171,22 @@ export default function CreatePortfolioPage() {
                 onChange={handleInputChange}
                 placeholder="https://github.com/username/repo"
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Status
+              </label>
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="DRAFT">Draft</option>
+                <option value="PUBLISHED">Published</option>
+                <option value="ARCHIVED">Archived</option>
+              </select>
             </div>
 
             <div>
@@ -203,4 +235,4 @@ export default function CreatePortfolioPage() {
       </motion.div>
     </div>
   );
-} 
+}

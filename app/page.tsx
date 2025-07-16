@@ -10,7 +10,7 @@ import Testimonials from '@/components/Testimonials';
 import Blog from '@/components/Blog';
 import Contact from '@/components/Contact';
 import Newsletter from '@/components/Newsletter';
-import Footer from '@/components/Footer';
+// import Footer from '@/components/Footer';
 import { publicApi } from '@/lib/api';
 
 interface BlogPost {
@@ -18,8 +18,11 @@ interface BlogPost {
   title: string;
   content: string;
   image?: string;
-  created_at: string;
+  created: string;
   status: string;
+  author: string;
+  category?: string;
+  read_time?: string;
 }
 
 interface PortfolioItem {
@@ -27,19 +30,15 @@ interface PortfolioItem {
   title: string;
   description: string;
   image?: string;
-  technologies?: string;
-  project_url?: string;
-  github_url?: string;
+  link?: string;
   status: string;
+  user: string;
 }
 
 interface Testimonial {
   id: string;
-  name: string;
-  position?: string;
-  company?: string;
+  author_name: string;
   content: string;
-  rating: number;
   image?: string;
   status: string;
 }
@@ -59,13 +58,11 @@ export default function HomePage() {
           publicApi.get('/api/core/testimonial/'),
         ]);
 
-        // Filter only published items
-        setBlogs(blogsRes.data.filter((blog: BlogPost) => blog.status === 'PUBLISHED').slice(0, 3));
-        setPortfolios(portfoliosRes.data.filter((portfolio: PortfolioItem) => portfolio.status === 'PUBLISHED').slice(0, 6));
-        setTestimonials(testimonialsRes.data.filter((testimonial: Testimonial) => testimonial.status === 'PUBLISHED').slice(0, 3));
+        setBlogs(blogsRes.data.slice(0, 3));
+        setPortfolios(portfoliosRes.data.slice(0, 6));
+        setTestimonials(testimonialsRes.data.slice(0, 3));
       } catch (error) {
         console.error('Error fetching data:', error);
-        // Fallback to empty arrays if API fails
         setBlogs([]);
         setPortfolios([]);
         setTestimonials([]);
@@ -98,7 +95,7 @@ export default function HomePage() {
       <Blog blogs={blogs} />
       <Contact />
       <Newsletter />
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

@@ -28,8 +28,6 @@ class DashboardService {
   // Dashboard Stats
   async getDashboardStats(): Promise<DashboardStats> {
     try {
-      // For now, we'll calculate stats from individual endpoints
-      // In a real app, you might have a dedicated stats endpoint
       const [blogs, portfolios, testimonials, messages] = await Promise.all([
         this.getAllBlogs(),
         this.getAllPortfolios(),
@@ -92,20 +90,23 @@ class DashboardService {
     }
   }
 
-  async updateBlog(id: string, data: UpdateBlogData): Promise<Blog> {
+  async updateBlog(id: string, data: UpdateBlogData | FormData): Promise<Blog> {
     try {
-      const formData = new FormData();
-      if (data.title) formData.append('title', data.title);
-      if (data.content) formData.append('content', data.content);
-      if (data.status) formData.append('status', data.status);
-      if (data.image) formData.append('image', data.image);
-
-      const response = await authApi.put<Blog>(`/api/core/blog/${id}/`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      return response.data;
+      if (data instanceof FormData) {
+        const response = await authApi.put<Blog>(`/api/core/blog/${id}/`, data, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        return response.data;
+      } else {
+        const response = await authApi.put<Blog>(`/api/core/blog/${id}/`, data, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        return response.data;
+      }
     } catch (error: any) {
       throw new Error(error.message || 'Failed to update blog');
     }
@@ -138,27 +139,28 @@ class DashboardService {
     }
   }
 
-  async createPortfolio(data: CreatePortfolioData): Promise<Portfolio> {
+  async createPortfolio(data: FormData): Promise<Portfolio> {
     try {
-      const formData = new FormData();
-      formData.append('title', data.title);
-      formData.append('description', data.description);
-      formData.append('status', data.status);
-      if (data.image) {
-        formData.append('image', data.image);
-      }
-      if (data.link) {
-        formData.append('link', data.link);
-      }
-
-      const response = await authApi.post<Portfolio>('/api/portfolio/portfolios/', formData, {
+      console.log('Sending create portfolio request:', Object.fromEntries(data));
+      const response = await authApi.post<Portfolio>('/api/portfolio/portfolios/', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
+      console.log('Portfolio created:', response.data);
       return response.data;
     } catch (error: any) {
-      throw new Error(error.message || 'Failed to create portfolio');
+      console.error('Create portfolio error:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
+      throw new Error(
+        error.response?.data?.message ||
+        error.response?.data?.non_field_errors?.[0] ||
+        Object.values(error.response?.data || {})[0] ||
+        'Failed to create portfolio'
+      );
     }
   }
 
@@ -191,11 +193,18 @@ class DashboardService {
   }
 
   // Testimonial Management
-  async getAllTestimonials(): Promise<Testimonial[]> {
+  async getAllTestimonials(isAdmin: boolean = false): Promise<Testimonial[]> {
     try {
-      const response = await authApi.get<Testimonial[]>('/api/core/testimonial/');
+      const url = isAdmin ? '/api/core/testimonial/?status=all' : '/api/core/testimonial/';
+      const response = await authApi.get<Testimonial[]>(url);
+      console.log('Fetched testimonials:', response.data);
       return response.data;
     } catch (error: any) {
+      console.error('Fetch testimonials error:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
       throw new Error(error.message || 'Failed to fetch testimonials');
     }
   }
@@ -209,23 +218,53 @@ class DashboardService {
     }
   }
 
-  async createTestimonial(data: CreateTestimonialData): Promise<Testimonial> {
+  async createTestimonial(data: FormData): Promise<Testimonial> {
     try {
-      const response = await authApi.post<Testimonial>('/api/core/testimonial/', data);
+      const response = await authApi.post<Testimonial>('/api/core/testimonial/', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       return response.data;
     } catch (error: any) {
-      throw new Error(error.message || 'Failed to create testimonial');
+      throw new Error(error.response?.data?.message || 'Failed to create testimonial');
     }
   }
 
-  async updateTestimonial(id: string, data: UpdateTestimonialData): Promise<Testimonial> {
+  async updateTestimonial(id: string, data: UpdateTestimonialData | FormData): Promise<Testimonial> {
     try {
-      const response = await authApi.put<Testimonial>(`/api/core/testimonial/${id}/`, data);
+      console.log('Sending update request for testimonial:', id, data instanceof FormData ? 'FormData' : data);
+  
+      const headers = data instanceof FormData
+        ? { 'Content-Type': 'multipart/form-data' }
+        : { 'Content-Type': 'application/json' };
+  
+      const response = await authApi.put<Testimonial>(`/api/core/testimonial/${id}/`, data, { headers });
+  
       return response.data;
+  
     } catch (error: any) {
-      throw new Error(error.message || 'Failed to update testimonial');
+      console.error('Update testimonial error:', {
+        message: error?.message,
+        response: error?.response?.data,
+        status: error?.response?.status,
+      });
+  
+      const fallbackError =
+        typeof error?.response?.data === 'object'
+          ? Object.values(error.response.data)[0]
+          : null;
+  
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.non_field_errors?.[0] ||
+        (Array.isArray(fallbackError) ? fallbackError[0] : fallbackError) ||
+        'Failed to update testimonial';
+  
+      throw new Error(errorMessage);
     }
   }
+  
 
   async deleteTestimonial(id: string): Promise<void> {
     try {
@@ -264,4 +303,4 @@ class DashboardService {
 }
 
 export const dashboardService = DashboardService.getInstance();
-export default dashboardService; 
+export default dashboardService;

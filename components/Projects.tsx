@@ -1,19 +1,24 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Github } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
 
 interface PortfolioItem {
   id: string;
   title: string;
   description: string;
   image?: string;
+  link?: string;
   technologies?: string;
-  project_url?: string;
   github_url?: string;
-  status: string;
+  status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+  user: string;
+  created: string;
+  modified: string;
 }
 
 interface ProjectsProps {
@@ -21,104 +26,125 @@ interface ProjectsProps {
 }
 
 export default function Projects({ portfolios }: ProjectsProps) {
-  if (!portfolios || portfolios.length === 0) {
-    return (
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
+  // Filter for only PUBLISHED portfolios for public landing page
+  const publishedPortfolios = portfolios.filter((project) => project.status === 'PUBLISHED');
+
+  return (
+    <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-4xl font-extrabold text-gray-900 tracking-tight sm:text-5xl">
+            Our Work
+          </h2>
+          <p className="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
+            Explore our showcase of innovative projects, built with cutting-edge technologies to solve real-world challenges.
+          </p>
+        </motion.div>
+
+        {/* Portfolio Grid */}
+        {publishedPortfolios.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="text-center"
           >
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Projects</h2>
-            <p className="text-gray-600 mb-8">No projects available at the moment.</p>
+            <p className="text-gray-600 text-lg">No projects available at the moment.</p>
+            <Button asChild className="mt-6 bg-purple-600 hover:bg-purple-700 text-white">
+              <Link href="/portfolio">View All Projects</Link>
+            </Button>
           </motion.div>
-        </div>
-      </section>
-    );
-  }
-
-  return (
-    <section className="py-16 bg-gray-50">
-      <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Projects</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Explore our portfolio of successful projects and innovative solutions that showcase our expertise and creativity.
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {portfolios.map((project, index) => (
-            <motion.div
-              key={project.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <Card className="h-full hover:shadow-lg transition-shadow">
-                <CardHeader className="p-0">
-                  {project.image && (
-                    <div className="aspect-video overflow-hidden rounded-t-lg">
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {publishedPortfolios.slice(0, 6).map((project, index) => ( // Limit to 6 projects for landing page
+              <motion.div
+                key={project.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
+              >
+                <Card className="h-full overflow-hidden bg-white shadow-lg hover:shadow-xl transition-all duration-300 border-0 rounded-xl">
+                  <CardHeader className="p-0">
+                    <div className="relative aspect-[16/9] overflow-hidden rounded-t-xl">
                       <img
-                        src={project.image}
+                        src={project.image || `https://images.unsplash.com/photo-${1600000000 + index}?w=600&h=400&fit=crop&auto=format`}
                         alt={project.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
                     </div>
-                  )}
-                </CardHeader>
-                <CardContent className="p-6">
-                  <CardTitle className="text-xl mb-2">{project.title}</CardTitle>
-                  <CardDescription className="mb-4">
-                    {project.description}
-                  </CardDescription>
-                  
-                  {project.technologies && (
-                    <div className="mb-4">
-                      <p className="text-sm text-gray-600 mb-2">Technologies:</p>
-                      <div className="flex flex-wrap gap-2">
-                        {project.technologies.split(',').map((tech, techIndex) => (
-                          <span
-                            key={techIndex}
-                            className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full"
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <CardTitle className="text-2xl font-semibold text-gray-900 mb-3">{project.title}</CardTitle>
+                    <p className="text-gray-600 text-sm line-clamp-3 mb-4">{project.description}</p>
+                    {project.technologies && (
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {project.technologies.split(',').map((tech, idx) => (
+                          <Badge
+                            key={idx}
+                            variant="secondary"
+                            className="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full"
                           >
                             {tech.trim()}
-                          </span>
+                          </Badge>
                         ))}
                       </div>
-                    </div>
-                  )}
-
-                  <div className="flex gap-2">
-                    {project.project_url && (
-                      <Button size="sm" variant="outline" asChild>
-                        <a href={project.project_url} target="_blank" rel="noopener noreferrer">
+                    )}
+                  </CardContent>
+                  <CardFooter className="p-6 pt-0 flex flex-wrap gap-2">
+                    {project.link && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        asChild
+                        className="border-purple-600 text-purple-600 hover:bg-purple-50 rounded-full"
+                      >
+                        <a href={project.link} target="_blank" rel="noopener noreferrer">
                           <ExternalLink size={16} className="mr-2" />
                           Live Demo
                         </a>
                       </Button>
                     )}
                     {project.github_url && (
-                      <Button size="sm" variant="outline" asChild>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        asChild
+                        className="border-gray-600 text-gray-600 hover:bg-gray-50 rounded-full"
+                      >
                         <a href={project.github_url} target="_blank" rel="noopener noreferrer">
                           <Github size={16} className="mr-2" />
-                          Code
+                          GitHub
                         </a>
                       </Button>
                     )}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+                  </CardFooter>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        )}
+
+        {/* View All Projects Button */}
+        {publishedPortfolios.length > 6 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="text-center mt-12"
+          >
+            <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-6 py-2">
+              <Link href="/portfolio">View All Projects</Link>
+            </Button>
+          </motion.div>
+        )}
       </div>
     </section>
   );

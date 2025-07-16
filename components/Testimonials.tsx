@@ -6,17 +6,17 @@ import { Star } from 'lucide-react';
 
 interface Testimonial {
   id: string;
-  name: string;
-  position?: string;
-  company?: string;
+  name: string; // Changed from author_name
   content: string;
-  rating: number;
   image?: string;
   status: string;
+  rating: number; // Added rating
+  position?: string; // Added position
+  company?: string; // Added company
 }
 
 interface TestimonialsProps {
-  testimonials: Testimonial[];
+  testimonials: Testimonial[] | null; // Allow null
 }
 
 export default function Testimonials({ testimonials }: TestimonialsProps) {
@@ -63,7 +63,6 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
             >
               <Card className="h-full p-6 hover:shadow-lg transition-shadow">
                 <CardContent className="p-0">
-                  {/* Rating */}
                   <div className="flex items-center mb-4">
                     {[...Array(5)].map((_, i) => (
                       <Star
@@ -77,26 +76,28 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
                       />
                     ))}
                   </div>
-
-                  {/* Content */}
                   <blockquote className="text-gray-700 mb-6 italic">
                     "{testimonial.content}"
                   </blockquote>
-
-                  {/* Author */}
                   <div className="flex items-center">
-                    {testimonial.image && (
+                    {testimonial.image ? (
                       <img
                         src={testimonial.image}
                         alt={testimonial.name}
                         className="w-12 h-12 rounded-full object-cover mr-4"
                       />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-gray-200 mr-4 flex items-center justify-center">
+                        <span className="text-gray-600">{testimonial.name[0]}</span>
+                      </div>
                     )}
                     <div>
                       <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
-                      {testimonial.position && testimonial.company && (
+                      {(testimonial.position || testimonial.company) && (
                         <p className="text-sm text-gray-600">
-                          {testimonial.position} at {testimonial.company}
+                          {testimonial.position}
+                          {testimonial.position && testimonial.company && ', '}
+                          {testimonial.company}
                         </p>
                       )}
                     </div>

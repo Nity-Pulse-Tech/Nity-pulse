@@ -1,3 +1,4 @@
+// app/blog/[id]/BlogPostClient.tsx
 'use client';
 
 import { useState } from 'react';
@@ -8,16 +9,20 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 
+interface BlogPost {
+  id: string;
+  title: string;
+  content: string;
+  image?: string;
+  created: string;
+  status: string;
+  author: string;
+  category?: string;
+  read_time?: string;
+}
+
 interface BlogPostClientProps {
-  post: {
-    id: string;
-    title: string;
-    publishDate: string;
-    readTime: string;
-    author: string;
-    content?: string;
-    excerpt: string;
-  } | undefined;
+  post: BlogPost | null;
 }
 
 export default function BlogPostClient({ post }: BlogPostClientProps) {
@@ -28,7 +33,9 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
   const [newComment, setNewComment] = useState('');
   const [replyTo, setReplyTo] = useState<string | null>(null);
 
-  if (!post) return <div className="text-black dark:text-white">Post not found</div>;
+  if (!post) {
+    return <div className="text-black dark:text-white">Post not found</div>;
+  }
 
   const handleLike = () => setLikes(likes + 1);
   const handleCommentSubmit = () => {
@@ -70,25 +77,31 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
           <div className="flex items-center text-sm text-black/60 dark:text-white/60 mb-4 space-x-4">
             <div className="flex items-center">
               <Calendar size={14} className="mr-1 text-black/60 dark:text-white/60" />
-              {new Date(post.publishDate).toLocaleDateString()}
+              {new Date(post.created).toLocaleDateString()}
             </div>
             <div className="flex items-center">
               <Clock size={14} className="mr-1 text-black/60 dark:text-white/60" />
-              {post.readTime}
+              {post.read_time || '5 min read'}
             </div>
             <div className="flex items-center">
               <User size={14} className="mr-1 text-black/60 dark:text-white/60" />
               {post.author}
             </div>
           </div>
-          <Image
-            src={`https://images.unsplash.com/photo-${1600000000 + parseInt(post.id)}?w=800&h=400&fit=crop`}
-            alt={post.title}
-            width={800}
-            height={400}
-            className="w-full h-96 object-cover rounded-lg mb-6"
-          />
-          <p className="text-lg text-black/60 dark:text-white/60">{post.content || post.excerpt}</p>
+          {post.image ? (
+            <Image
+              src={post.image}
+              alt={post.title}
+              width={800}
+              height={400}
+              className="w-full h-96 object-cover rounded-lg mb-6"
+            />
+          ) : (
+            <div className="w-full h-96 bg-gray-200 rounded-lg mb-6 flex items-center justify-center">
+              <span className="text-gray-600">No image available</span>
+            </div>
+          )}
+          <p className="text-lg text-black/60 dark:text-white/60">{post.content}</p>
           <Button
             variant="outline"
             className="mt-4 text-black dark:text-white border-primary/20 hover:border-primary"
