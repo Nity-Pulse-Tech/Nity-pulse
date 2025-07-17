@@ -1,4 +1,3 @@
-// app/blog/[id]/BlogPostClient.tsx
 'use client';
 
 import { useState } from 'react';
@@ -38,6 +37,7 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
   }
 
   const handleLike = () => setLikes(likes + 1);
+
   const handleCommentSubmit = () => {
     if (!newComment.trim()) return;
     const comment = { id: Date.now().toString(), author: 'Anonymous', content: newComment, replies: [] };
@@ -88,6 +88,7 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
               {post.author}
             </div>
           </div>
+
           {post.image ? (
             <Image
               src={post.image}
@@ -101,7 +102,9 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
               <span className="text-gray-600">No image available</span>
             </div>
           )}
+
           <p className="text-lg text-black/60 dark:text-white/60">{post.content}</p>
+
           <Button
             variant="outline"
             className="mt-4 text-black dark:text-white border-primary/20 hover:border-primary"
@@ -141,6 +144,7 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
               )}
             </div>
           </div>
+
           {comments.map((comment, index) => (
             <motion.div
               key={comment.id}
@@ -153,11 +157,7 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
                 <CardContent className="p-4">
                   <p className="font-semibold text-black dark:text-white">{comment.author}</p>
                   <p className="text-black/60 dark:text-white/60">{comment.content}</p>
-                  <Button
-                    variant="link"
-                    className="text-primary"
-                    onClick={() => setReplyTo(comment.id)}
-                  >
+                  <Button variant="link" className="text-primary" onClick={() => setReplyTo(comment.id)}>
                     Reply
                   </Button>
                   {comment.replies?.map((reply, replyIndex) => (

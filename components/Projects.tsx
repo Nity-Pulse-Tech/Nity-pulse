@@ -7,27 +7,15 @@ import { ExternalLink, Github } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import Link from 'next/link';
-
-interface PortfolioItem {
-  id: string;
-  title: string;
-  description: string;
-  image?: string;
-  link?: string;
-  technologies?: string;
-  github_url?: string;
-  status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
-  user: string;
-  created: string;
-  modified: string;
-}
+import type { Portfolio } from '@/lib/types/dashboard'; 
 
 interface ProjectsProps {
-  portfolios: PortfolioItem[];
+  portfolios: Portfolio[];  // Use Portfolio instead of local interface
 }
 
+
+
 export default function Projects({ portfolios }: ProjectsProps) {
-  // Filter for only PUBLISHED portfolios for public landing page
   const publishedPortfolios = portfolios.filter((project) => project.status === 'PUBLISHED');
 
   return (
@@ -92,7 +80,7 @@ export default function Projects({ portfolios }: ProjectsProps) {
                         {project.technologies.split(',').map((tech, idx) => (
                           <Badge
                             key={idx}
-                            variant="secondary"
+                            color="secondary"
                             className="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full"
                           >
                             {tech.trim()}

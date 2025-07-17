@@ -5,17 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Star } from 'lucide-react';
 import Image from 'next/image';
 
-interface Testimonial {
-  id: string;
-  name: string; // Changed from author_name
-  content: string;
-  image?: string;
-  status: string;
-  rating: number; // Added rating
-  position?: string; // Added position
-  company?: string; // Added company
-}
-
+import type { Testimonial } from '@/lib/types/dashboard'; // Adjust the import path as needed
 interface TestimonialsProps {
   testimonials: Testimonial[] | null; // Allow null
 }

@@ -29,13 +29,18 @@ export interface Portfolio {
 
 export interface Testimonial {
   id: string;
+  name: string; // <-- changed from author_name to name, required field
   content: string;
   status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
-  author_name: string;
   user: string;
+  image?: string | null;  // optional
+  position?: string | null;
+  company?: string | null;
+  rating: number;
   created: string;
   modified: string;
 }
+
 
 export interface ContactMessage {
   id: string;
@@ -74,11 +79,14 @@ export interface UpdateBlogData {
 
 
 export interface UpdatePortfolioData {
-  title?: string;
-  description?: string;
-  image?: File;
-  link?: string;
-  status?: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+  title: string;
+  description: string;
+  technologies: string;
+  project_url: string;
+  github_url: string;
+  status: PortfolioStatus; // 👈 expects EXACTLY one of those three strings
+  image?: File | null;   // add this
+  link?: string; 
 }
 
 export interface CreateTestimonialData {
@@ -107,3 +115,13 @@ export interface CreatePortfolioData {
   github_url?: string; // Added
   status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
 }
+
+export type PortfolioStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED";
+
+
+
+export type APIErrorResponse = {
+  message?: string;
+  non_field_errors?: string[];
+  [key: string]: string[] | string | undefined;
+};

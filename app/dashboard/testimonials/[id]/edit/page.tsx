@@ -13,6 +13,7 @@ import { ArrowLeft, Upload, Save, Star } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { isAxiosError } from '@/utils/errorUtils';
+import type { ErrorResponseData } from '@/lib/types/error';
 
 export default function EditTestimonialPage() {
   const router = useRouter();
@@ -145,13 +146,20 @@ export default function EditTestimonialPage() {
           response: error.response?.data,
           status: error.response?.status,
         });
-        const errorMessage =
+    
+        const data = error.response?.data as ErrorResponseData | undefined;
+    
+        const rawErrorMessage =
           error.response?.status === 401
             ? 'Authentication failed. Please log in again.'
-            : error.response?.data?.message ||
-              error.response?.data?.non_field_errors?.[0] ||
-              Object.values(error.response?.data || {})[0] ||
+            : data?.message ||
+              data?.non_field_errors?.[0] ||
+              Object.values(data || {})[0] ||
               'Failed to update testimonial';
+        console.error('Raw error message:', rawErrorMessage);
+        const errorMessage =
+        typeof rawErrorMessage === 'string' ? rawErrorMessage : JSON.stringify(rawErrorMessage);
+    
         toast.error(errorMessage);
       } else {
         console.error('Unknown error updating testimonial:', error);

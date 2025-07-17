@@ -156,24 +156,33 @@ class DashboardService {
     }
   }
 
-  async updatePortfolio(id: string, data: UpdatePortfolioData): Promise<Portfolio> {
+  async updatePortfolio(id: string, data: UpdatePortfolioData | FormData): Promise<Portfolio> {
     try {
-      const formData = new FormData();
-      if (data.title) formData.append('title', data.title);
-      if (data.description) formData.append('description', data.description);
-      if (data.status) formData.append('status', data.status);
-      if (data.image) formData.append('image', data.image);
-      if (data.link) formData.append('link', data.link);
-
-      const response = await authApi.put<Portfolio>(`/api/portfolio/portfolios/${id}/`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      const isFormData = data instanceof FormData;
+      const payload = isFormData ? data : (() => {
+        const form = new FormData();
+        if (data.title) form.append('title', data.title);
+        if (data.description) form.append('description', data.description);
+        if (data.status) form.append('status', data.status);
+        if (data.image) form.append('image', data.image);
+        if (data.link) form.append('link', data.link);
+        return form;
+      })();
+  
+      const response = await authApi.put<Portfolio>(
+        `/api/portfolio/portfolios/${id}/`,
+        payload,
+        {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        }
+      );
       return response.data;
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to update portfolio';
       throw new Error(errorMessage);
     }
   }
+  
 
   async deletePortfolio(id: string): Promise<void> {
     try {

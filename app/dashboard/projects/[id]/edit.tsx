@@ -1,9 +1,12 @@
 'use client';
 import { useState } from 'react';
+import { useParams } from 'next/navigation';
 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+
+
 
 const initialProjects = [
   { id: '1', name: 'Project Alpha', description: 'First project description.' },

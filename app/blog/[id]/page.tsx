@@ -1,9 +1,5 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import type { NextPage } from 'next';
-import { publicApi } from '@/lib/api';
 import BlogPostClient from './BlogPostClient';
+import { publicApi } from '@/lib/api';
 import { isAxiosError } from '@/utils/errorUtils';
 
 interface BlogPost {
@@ -18,48 +14,26 @@ interface BlogPost {
   read_time?: string;
 }
 
-type BlogPageProps = {
-  params: { id: string };
-};
+type Params = Promise<{ id: string }>;
 
-const BlogPost: NextPage<BlogPageProps> = ({ params }) => {
-  const { id } = params;
-  const [post, setPost] = useState<BlogPost | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export default async function BlogPostPage({ params }: { params: Params }) {
+  const { id } = await params;
 
-  useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const response = await publicApi.get(`/api/core/blog/${id}/`);
-        setPost(response.data);
-      } catch (error: unknown) {
-        if (isAxiosError(error)) {
-          console.error('Error fetching blog post:', {
-            message: error.message,
-            response: error.response?.data,
-            status: error.response?.status,
-          });
-        } else {
-          console.error('Unknown error fetching blog post:', error);
-        }
-        setPost(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  let post: BlogPost | null = null;
 
-    fetchPost();
-  }, [id]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
+  try {
+    const response = await publicApi.get(`/api/core/blog/${id}/`);
+    post = response.data;
+  } catch (error: unknown) {
+    if (isAxiosError(error)) {
+      console.error('Error fetching blog post:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
+    } else {
+      console.error('Unknown error fetching blog post:', error);
+    }
   }
 
   if (!post) {
@@ -74,6 +48,4 @@ const BlogPost: NextPage<BlogPageProps> = ({ params }) => {
   }
 
   return <BlogPostClient post={post} />;
-};
-
-export default BlogPost;
+}

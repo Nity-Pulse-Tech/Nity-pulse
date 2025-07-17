@@ -12,6 +12,7 @@ import Contact from '@/components/Contact';
 import Newsletter from '@/components/Newsletter';
 // import Footer from '@/components/Footer';
 import { publicApi } from '@/lib/api';
+import type { Portfolio, Testimonial as TestimonialType } from '@/lib/types/dashboard';
 
 interface BlogPost {
   id: string;
@@ -25,28 +26,11 @@ interface BlogPost {
   read_time?: string;
 }
 
-interface PortfolioItem {
-  id: string;
-  title: string;
-  description: string;
-  image?: string;
-  link?: string;
-  status: string;
-  user: string;
-}
-
-interface Testimonial {
-  id: string;
-  author_name: string;
-  content: string;
-  image?: string;
-  status: string;
-}
 
 export default function HomePage() {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
-  const [portfolios, setPortfolios] = useState<PortfolioItem[]>([]);
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
+  const [testimonials, setTestimonials] = useState<TestimonialType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -60,7 +44,7 @@ export default function HomePage() {
 
         setBlogs(blogsRes.data.slice(0, 3));
         setPortfolios(portfoliosRes.data.slice(0, 6));
-        setTestimonials(testimonialsRes.data.slice(0, 3));
+        setTestimonials(testimonialsRes.data.slice(0, 3)); 
       } catch (error) {
         console.error('Error fetching data:', error);
         setBlogs([]);

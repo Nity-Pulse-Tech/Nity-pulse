@@ -68,13 +68,13 @@ export default function CreatePortfolioPage() {
           response: error.response?.data,
           status: error.response?.status,
         });
-        toast.error(
-          error.response?.data?.message ||
-          error.response?.data?.non_field_errors?.[0] ||
-          Object.values(error.response?.data || {})[0]?.[0] ||
-          error.message ||
-          'Failed to create portfolio item'
-        );
+        // toast.error(
+        //   error.response?.data?.message ||
+        //   error.response?.data?.non_field_errors?.[0] ||
+        //   Object.values(error.response?.data || {})[0]?.[0] ||
+        //   error.message ||
+        //   'Failed to create portfolio item'
+        // );
       } else {
         console.error('Unknown error creating portfolio:', error);
         toast.error('Failed to create portfolio item');

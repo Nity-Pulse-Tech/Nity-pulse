@@ -12,3 +12,9 @@ export interface ErrorData {
     };
   }
   
+  export interface ErrorResponseData {
+    message?: string;
+    non_field_errors?: string[];
+    [key: string]: unknown;
+  }
+  

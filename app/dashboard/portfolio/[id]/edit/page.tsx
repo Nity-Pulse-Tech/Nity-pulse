@@ -11,6 +11,8 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Upload, Save } from 'lucide-react';
 import Link from 'next/link';
 import { isAxiosError } from '@/utils/errorUtils';
+import type {  PortfolioStatus } from "@/lib/types/dashboard";
+
 
 export default function EditPortfolioPage() {
   const router = useRouter();
@@ -59,10 +61,15 @@ export default function EditPortfolioPage() {
     }
   }, [portfolioId, router]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -82,7 +89,7 @@ export default function EditPortfolioPage() {
         technologies: formData.technologies,
         project_url: formData.project_url,
         github_url: formData.github_url,
-        status: formData.status,
+        status: formData.status as PortfolioStatus,
       };
 
       if (formData.image) {
