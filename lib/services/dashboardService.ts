@@ -71,22 +71,35 @@ class DashboardService {
 
   async createBlog(data: CreateBlogData): Promise<Blog> {
     try {
+      // Construct FormData from CreateBlogData
       const formData = new FormData();
       formData.append('title', data.title);
       formData.append('content', data.content);
       formData.append('status', data.status);
+  
+      // Append image only if it exists and is valid
       if (data.image) {
-        formData.append('image', data.image);
+        if (data.image instanceof File || typeof data.image === 'string') {
+          formData.append('image', data.image);
+        } else {
+          throw new Error('Invalid image format. Must be a File or string.');
+        }
       }
-
+  
+      // Make the POST request with FormData
       const response = await authApi.post<Blog>('/api/core/blog/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
+  
       return response.data;
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to create blog';
+      // Enhanced error handling
+      const errorMessage =
+        error instanceof Error
+          ? `Failed to create blog: ${error.message}`
+          : 'Failed to create blog due to an unknown error';
       throw new Error(errorMessage);
     }
   }

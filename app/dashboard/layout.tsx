@@ -52,12 +52,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <header className="bg-white shadow-sm border-b border-gray-200 px-4 py-3 lg:px-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
+              {/* Sidebar toggler for mobile */}
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-2 rounded-md text-gray-600 hover:bg-gray-100"
+                className="lg:hidden mt-25 p-2 rounded-md border border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 aria-label="Open sidebar"
               >
                 <Menu size={24} />
+                <span className="sr-only">Open sidebar</span>
               </button>
               <div className="hidden lg:block">
                 <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>

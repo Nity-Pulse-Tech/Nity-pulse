@@ -1,5 +1,5 @@
 'use client';
-import { Code, Smartphone, Search, Brain, ArrowRight } from 'lucide-react';
+import { Code, Smartphone, ArrowRight, Brain, Shield, Network, Phone } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 
@@ -15,7 +15,7 @@ const Services = () => {
       title: "Mobile Apps",
       description: "Building iOS and Android apps that connect teams and deliver seamless experiences.",
       icon: Smartphone,
-      features: ["Native Development", "Cross-Platform Apps", "App Store Optimization", "Ongoing Support"]
+      features: ["Native Development", "Cross-Platform Apps-move", "App Store Optimization", "Ongoing Support"]
     },
     {
       title: "AI & Analytics",
@@ -24,10 +24,22 @@ const Services = () => {
       features: ["Machine Learning", "Data Insights", "AI Assistants", "Predictive Analytics"]
     },
     {
-      title: "Digital Strategy",
-      description: "Enhancing your online presence with strategic SEO and digital marketing solutions.",
-      icon: Search,
-      features: ["Keyword Strategy", "On-Page SEO", "Technical SEO", "Performance Tracking"]
+      title: "Cybersecurity",
+      description: "Protecting your digital assets with robust security solutions and threat mitigation.",
+      icon: Shield,
+      features: ["Threat Detection", "Data Encryption", "Security Audits", "Incident Response"]
+    },
+    {
+      title: "Telecommunications",
+      description: "Delivering reliable, high-speed communication networks for seamless connectivity.",
+      icon: Network,
+      features: ["Network Infrastructure", "VoIP Solutions", "5G Integration", "Network Optimization"]
+    },
+    {
+      title: "Telephone",
+      description: "Providing advanced telephony solutions for efficient and scalable communication.",
+      icon: Phone,
+      features: ["Cloud Telephony", "PBX Systems", "Call Analytics", "Voice Integration"]
     }
   ];
 
@@ -61,7 +73,7 @@ const Services = () => {
         </motion.div>
 
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, amount: 0.3 }}

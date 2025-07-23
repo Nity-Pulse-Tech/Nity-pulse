@@ -6,20 +6,13 @@ import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { dashboardService } from '@/lib/services/dashboardService';
-import { CreateBlogData } from '@/lib/types/dashboard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
-
-import { 
-  ArrowLeft, 
-  Save, 
-  X,
-  Image as ImageIcon
-} from 'lucide-react';
+import { ArrowLeft, Save, X, Image as ImageIcon } from 'lucide-react';
 
 export default function CreateBlogPage() {
-  const [formData, setFormData] = useState<CreateBlogData>({
+  const [formData, setFormData] = useState({
     title: '',
     content: '',
     status: 'DRAFT',
@@ -40,12 +33,13 @@ export default function CreateBlogPage() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      console.log('Selected image:', file); // Debug: Log selected file
       setSelectedImage(file);
-      
-      // Create preview
       const reader = new FileReader();
       reader.onload = (e) => {
-        setImagePreview(e.target?.result as string);
+        const result = e.target?.result as string;
+        console.log('Image preview URL:', result); // Debug: Log preview URL
+        setImagePreview(result);
       };
       reader.readAsDataURL(file);
     }
@@ -58,7 +52,7 @@ export default function CreateBlogPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.title.trim()) {
       toast.error('Please enter a title');
       return;
@@ -71,22 +65,35 @@ export default function CreateBlogPage() {
 
     setIsLoading(true);
     try {
-      const blogData: CreateBlogData = {
-        ...formData,
-        image: selectedImage || undefined,
-      };
+      const blogFormData = new FormData();
+      blogFormData.append('title', formData.title);
+      blogFormData.append('content', formData.content);
+      blogFormData.append('status', formData.status);
+      if (selectedImage) {
+        blogFormData.append('image', selectedImage);
+      }
 
-      await dashboardService.createBlog(blogData);
+      // Debug: Log FormData contents
+      for (const [key, value] of blogFormData.entries()) {
+        console.log(`${key}:`, value);
+      }
+
+      await dashboardService.createBlog({
+        title: formData.title,
+        content: formData.content,
+        status: formData.status as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED',
+        image: selectedImage ?? undefined,
+      });
+      
       toast.success('Blog post created successfully!');
       router.push('/dashboard/blog');
     } catch (error: unknown) {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error('Failed to delete blog post');
+        toast.error('Failed to create blog post');
       }
-    }
-     finally {
+    } finally {
       setIsLoading(false);
     }
   };
@@ -163,13 +170,12 @@ export default function CreateBlogPage() {
               {imagePreview ? (
                 <div className="relative">
                   <Image
-                      src={imagePreview}
-                      alt="Preview"
-                      width={800}
-                      height={400}
-                      className="w-full h-64 object-cover rounded-lg border border-gray-200"
-                    />
-
+                    src={imagePreview}
+                    alt="Preview"
+                    width={800}
+                    height={400}
+                    className="w-full h-64 object-cover rounded-lg border border-gray-200"
+                  />
                   <button
                     type="button"
                     onClick={removeImage}
@@ -231,7 +237,6 @@ export default function CreateBlogPage() {
                 Cancel
               </Button>
             </Link>
-            
             <div className="flex items-center space-x-3">
               <Button
                 type="submit"
@@ -273,4 +278,4 @@ export default function CreateBlogPage() {
       </motion.div>
     </div>
   );
-} 
+}

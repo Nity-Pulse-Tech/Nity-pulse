@@ -1,8 +1,10 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
-import Image from 'next/image';
+
 import { motion } from 'framer-motion';
+import AutoCarousel from '@/components/AutoCarousel';
+
 
 const Hero = () => {
   return (
@@ -76,16 +78,11 @@ const Hero = () => {
                     <div className="text-xs text-foreground/60 font-mono">Nity Pulse</div>
                   </div>
                   <div className="text-center">
-                    <div className="relative w-72 h-72 mx-auto mb-4">
-                      <Image
-                        src="https://images.unsplash.com/photo-1620712943543-bcc0b4614b6d?w=600&h=600&fit=crop"
-                        alt="Nity Pulse Team"
-                        width={288}
-                        height={288}
-                        className="w-full h-full object-cover rounded-2xl shadow-lg"
-                      />
-                      <div className="absolute inset-0 gradient-primary rounded-2xl opacity-20"></div>
-                    </div>
+                  <div className="relative w-72 h-72 mx-auto mb-4">
+                    <AutoCarousel />
+                    <div className="absolute inset-0 gradient-primary rounded-2xl opacity-20"></div>
+                  </div>
+
                     <h3 className="text-xl font-bold mb-2">Our Team in Action</h3>
                     <p className="text-primary font-semibold mb-3">Crafting the Future</p>
                     <div className="bg-primary/10 rounded-xl p-4">
