@@ -67,18 +67,14 @@ export default function Blog({ blogs }: BlogProps) {
             >
               <Card className="h-full hover:shadow-lg transition-shadow">
                 <CardHeader className="p-0">
-                  <div className="aspect-video overflow-hidden rounded-t-lg">
-                 
-
-                 
+                <div className="aspect-video relative overflow-hidden rounded-t-lg">
                     <Image
-                      src={post.image || `https://images.unsplash.com/photo-${1600000000 + index}?w=600&h=400&fit=crop`}
+                      src={post.image || '/fallback-image.jpg'}
                       alt={post.title}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-cover rounded-t-lg"
                     />
-
                   </div>
                 </CardHeader>
                 <CardContent className="p-6">

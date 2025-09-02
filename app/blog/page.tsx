@@ -154,7 +154,7 @@ export default function BlogPage() {
                     <CardHeader className="p-0">
                       <div className="relative overflow-hidden rounded-t-lg">
                         <Image
-                          src={post.image || `https://images.unsplash.com/photo-${1600000000 + index}?w=600&h=400&fit=crop`}
+                           src={post.image || '/fallback-image.jpg'}
                           alt={post.title}
                           width={600}
                           height={400}

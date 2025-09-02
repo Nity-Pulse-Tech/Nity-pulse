@@ -265,7 +265,7 @@ export default function BlogManagementPage() {
                       </Button>
                     </Link>
                     
-                    <Link href={`/blog/${blog.slug}`} target="_blank">
+                    <Link href={`/blog/${blog.id}`}>
                       <Button variant="outline" size="sm">
                         <Eye size={16} className="mr-1" />
                         View

@@ -63,7 +63,7 @@ export default function Projects({ portfolios }: ProjectsProps) {
                   <CardHeader className="p-0">
                     <div className="relative aspect-[16/9] overflow-hidden rounded-t-xl">
                     <Image
-                          src={project.image || `https://images.unsplash.com/photo-${1600000000 + index}?w=600&h=400&fit=crop&auto=format`}
+                           src={project.image || '/fallback-image.jpg'}
                           alt={project.title}
                           fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
