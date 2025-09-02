@@ -4,7 +4,7 @@ import useEmblaCarousel from 'embla-carousel-react';
 import Image from 'next/image';
 import { useEffect } from 'react';
 
-const images = ['/image.png', '/image2.png'];
+const images = ['/ai_learn.jpg','/ai_learn2.jpg', '/image.png', '/image2.png'];
 
 export default function AutoCarousel() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
@@ -15,7 +15,7 @@ export default function AutoCarousel() {
     const interval = setInterval(() => {
       if (emblaApi.canScrollNext()) emblaApi.scrollNext();
       else emblaApi.scrollTo(0);
-    }, 3000);
+    }, 4000);
 
     return () => clearInterval(interval);
   }, [emblaApi]);
