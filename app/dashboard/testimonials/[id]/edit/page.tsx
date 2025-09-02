@@ -39,7 +39,7 @@ export default function EditTestimonialPage() {
         const testimonial = await dashboardService.getTestimonial(testimonialId);
         console.log('Fetched testimonial:', testimonial);
         setFormData({
-          name: testimonial.name,
+          name: testimonial.author_name,
           content: testimonial.content,
           position: testimonial.position || '',
           company: testimonial.company || '',

@@ -44,7 +44,7 @@ export default function HomePage() {
 
         setBlogs(blogsRes.data.slice(0, 3));
         setPortfolios(portfoliosRes.data.slice(0, 6));
-        setTestimonials(testimonialsRes.data.slice(0, 3)); 
+        setTestimonials(testimonialsRes.data.slice(0, 6)); 
       } catch (error) {
         console.error('Error fetching data:', error);
         setBlogs([]);
