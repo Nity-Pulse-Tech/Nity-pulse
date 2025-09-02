@@ -57,7 +57,7 @@ export default function TestimonialsManagementPage() {
     // Search filter
     if (searchTerm) {
       filtered = filtered.filter(testimonial =>
-        testimonial.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        testimonial.author_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         testimonial.content.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
@@ -232,7 +232,7 @@ export default function TestimonialsManagementPage() {
                       </div>
                       <div>
                         <h3 className="text-lg font-medium text-gray-900">
-                          {testimonial.name}
+                          {testimonial.author_name}
                         </h3>
                         <div className="flex items-center space-x-2">
                           <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(testimonial.status)}`}>
