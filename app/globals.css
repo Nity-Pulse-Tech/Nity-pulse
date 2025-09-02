@@ -15,7 +15,7 @@
 /* Root variables for Nity Pulse branding and shadcn/ui */
 :root {
   /* Branding */
-  --primary: #1E90FF; /* Bleu électrique (Primary en mode clair) */
+  --primary: #001F54; /* Bleu électrique (Primary en mode clair) */
   --secondary: #FFA500; /* Orange vif (Secondary en mode clair) */
   --black: #1F1F1F; /* Noir profond */
   --white: #FFFFFF; /* Blanc pur */
@@ -46,7 +46,7 @@
   /* Borders / Inputs */
   --border: #E5E7EB;
   --input: #E5E7EB;
-  --ring: #1E90FF; /* Glow bleu électrique */
+  --ring: #001F54; /* Glow bleu électrique */
 
   /* Charts */
   --chart-1: #FFA500; /* Orange vif */
@@ -58,12 +58,12 @@
   /* Sidebar */
   --sidebar: #FFFFFF;
   --sidebar-foreground: #1F1F1F;
-  --sidebar-primary: #1E90FF;
+  --sidebar-primary: #001F54;
   --sidebar-primary-foreground: #FFFFFF;
   --sidebar-accent: #F5F5F5;
   --sidebar-accent-foreground: #1F1F1F;
   --sidebar-border: #E5E7EB;
-  --sidebar-ring: #1E90FF;
+  --sidebar-ring: #001F54;
 }
 
 /* Dark mode variables */
@@ -77,7 +77,7 @@
   --popover-foreground: #FFFFFF;
 
   /* Branding */
-  --primary: #007BFF; /* Bleu classique (Primary en mode sombre) */
+  --primary: #001F54; /* Bleu classique (Primary en mode sombre) */
   --primary-foreground: #FFFFFF; /* Blanc lisible sur bleu classique */
   --secondary: #FF8C00; /* Orange foncé (Secondary en mode sombre) */
   --secondary-foreground: #1F1F1F;
@@ -95,7 +95,7 @@
   /* Borders / Inputs */
   --border: #374151;
   --input: #374151;
-  --ring: #007BFF; /* Glow bleu classique */
+  --ring: #001F54; /* Glow bleu classique */
 
   /* Charts */
   --chart-1: #FFA500; /* Orange vif */
@@ -107,12 +107,12 @@
   /* Sidebar */
   --sidebar: #2D2D2D;
   --sidebar-foreground: #FFFFFF;
-  --sidebar-primary: #007BFF;
+  --sidebar-primary: #001F54;
   --sidebar-primary-foreground: #FFFFFF;
   --sidebar-accent: #4B5563;
   --sidebar-accent-foreground: #FFFFFF;
   --sidebar-border: #374151;
-  --sidebar-ring: #007BFF;
+  --sidebar-ring: #001F54;
 }
 
 /* Base styles */
