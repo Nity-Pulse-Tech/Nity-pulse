@@ -76,18 +76,18 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
                     {testimonial.image ? (
                       <Image
                       src={testimonial.image}
-                      alt={testimonial.name}
+                      alt={testimonial.author_name}
                       width={48}
                       height={48}
                       className="rounded-full object-cover mr-4"
                     />
                     ) : (
                       <div className="w-12 h-12 rounded-full bg-gray-200 mr-4 flex items-center justify-center">
-                        <span className="text-gray-600">{testimonial.name[0]}</span>
+                        <span className="text-gray-600">{testimonial.author_name[0]}</span>
                       </div>
                     )}
                     <div>
-                      <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
+                      <h4 className="font-semibold text-gray-900">{testimonial.author_name}</h4>
                       {(testimonial.position || testimonial.company) && (
                         <p className="text-sm text-gray-600">
                           {testimonial.position}

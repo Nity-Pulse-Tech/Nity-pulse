@@ -29,7 +29,7 @@ export interface Portfolio {
 
 export interface Testimonial {
   id: string;
-  name: string; // <-- changed from author_name to name, required field
+  author_name: string; // <-- changed from author_name to name, required field
   content: string;
   status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
   user: string;
