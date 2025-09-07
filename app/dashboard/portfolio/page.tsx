@@ -19,6 +19,7 @@ import {
   Filter,
   ExternalLink
 } from 'lucide-react';
+import LoadingSpinner from '@/components/common/LoadingSpinner';
 
 export default function PortfolioManagementPage() {
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
@@ -44,7 +45,7 @@ export default function PortfolioManagementPage() {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error('Failed to delete ');
+        toast.error('Failed to load portfolios');
       }
     } finally {
       setIsLoading(false);
@@ -54,7 +55,6 @@ export default function PortfolioManagementPage() {
   const filterPortfolios = () => {
     let filtered = portfolios;
 
-    // Search filter
     if (searchTerm) {
       filtered = filtered.filter(portfolio =>
         portfolio.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -62,7 +62,6 @@ export default function PortfolioManagementPage() {
       );
     }
 
-    // Status filter
     if (statusFilter !== 'ALL') {
       filtered = filtered.filter(portfolio => portfolio.status === statusFilter);
     }
@@ -78,15 +77,14 @@ export default function PortfolioManagementPage() {
     try {
       await dashboardService.deletePortfolio(id);
       toast.success('Portfolio item deleted successfully');
-      loadPortfolios(); // Reload the list
+      loadPortfolios();
     } catch (error: unknown) {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error('Failed to delete ');
+        toast.error('Failed to delete portfolio item');
       }
     }
-    
   };
 
   const formatDate = (dateString: string) => {
@@ -100,13 +98,13 @@ export default function PortfolioManagementPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PUBLISHED':
-        return 'bg-green-100 text-green-800';
+        return 'bg-primary/10 text-primary';
       case 'DRAFT':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-secondary/10 text-secondary';
       case 'ARCHIVED':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -114,8 +112,8 @@ export default function PortfolioManagementPage() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading portfolios...</p>
+          <LoadingSpinner />
+          <p className="mt-4 text-muted-foreground">Loading portfolios...</p>
         </div>
       </div>
     );
@@ -124,15 +122,15 @@ export default function PortfolioManagementPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Portfolio Management</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="text-3xl font-bold text-foreground">Portfolio Management</h1>
+          <p className="mt-2 text-muted-foreground">
             Manage your portfolio items, showcase your work, and track their status.
           </p>
         </div>
         <Link href="/dashboard/portfolio/create">
-          <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+          <Button className="btn-primary">
             <Plus size={20} className="mr-2" />
             Add Portfolio Item
           </Button>
@@ -144,28 +142,28 @@ export default function PortfolioManagementPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-white rounded-lg shadow p-6"
+        className="card p-6"
       >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
             <Input
               type="text"
               placeholder="Search portfolios..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 border-input focus:ring-ring"
             />
           </div>
 
           {/* Status Filter */}
           <div className="relative">
-            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-input rounded-md focus:ring-2 focus:ring-ring focus:border-transparent"
             >
               <option value="ALL">All Status</option>
               <option value="DRAFT">Draft</option>
@@ -175,9 +173,9 @@ export default function PortfolioManagementPage() {
           </div>
 
           {/* Stats */}
-          <div className="flex items-center justify-center bg-gray-50 rounded-md p-3">
-            <Briefcase className="text-gray-600 mr-2" size={20} />
-            <span className="text-sm text-gray-600">
+          <div className="flex items-center justify-center bg-accent rounded-md p-3">
+            <Briefcase className="text-muted-foreground mr-2" size={20} />
+            <span className="text-sm text-muted-foreground">
               {filteredPortfolios.length} of {portfolios.length} items
             </span>
           </div>
@@ -189,17 +187,17 @@ export default function PortfolioManagementPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="bg-white rounded-lg shadow overflow-hidden"
+        className="card overflow-hidden"
       >
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Portfolio Items</h2>
+        <div className="px-6 py-4 border-b border-border">
+          <h2 className="text-lg font-semibold text-foreground">Portfolio Items</h2>
         </div>
 
         {filteredPortfolios.length === 0 ? (
           <div className="p-8 text-center">
-            <Briefcase className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No portfolio items found</h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <Briefcase className="mx-auto h-12 w-12 text-muted-foreground" />
+            <h3 className="mt-2 text-sm font-medium text-foreground">No portfolio items found</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
               {searchTerm || statusFilter !== 'ALL' 
                 ? 'Try adjusting your search or filter criteria.'
                 : 'Get started by adding your first portfolio item.'
@@ -208,7 +206,7 @@ export default function PortfolioManagementPage() {
             {!searchTerm && statusFilter === 'ALL' && (
               <div className="mt-6">
                 <Link href="/dashboard/portfolio/create">
-                  <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+                  <Button className="btn-primary">
                     <Plus size={20} className="mr-2" />
                     Add Portfolio Item
                   </Button>
@@ -217,17 +215,17 @@ export default function PortfolioManagementPage() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
             {filteredPortfolios.map((portfolio) => (
               <motion.div
                 key={portfolio.id}
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+                className="bg-card border border-border rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
               >
                 {/* Image */}
                 {portfolio.image && (
-                  <div className="aspect-video bg-gray-100">
+                  <div className="aspect-video bg-accent">
                     <img
                       src={portfolio.image}
                       alt={portfolio.title}
@@ -239,7 +237,7 @@ export default function PortfolioManagementPage() {
                 {/* Content */}
                 <div className="p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-medium text-gray-900 truncate">
+                    <h3 className="text-lg font-medium text-foreground truncate">
                       {portfolio.title}
                     </h3>
                     <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(portfolio.status)}`}>
@@ -247,11 +245,11 @@ export default function PortfolioManagementPage() {
                     </span>
                   </div>
 
-                  <p className="text-sm text-gray-600 mb-3 line-clamp-3">
+                  <p className="text-sm text-muted-foreground mb-3 line-clamp-3">
                     {portfolio.description}
                   </p>
 
-                  <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
                     <div className="flex items-center">
                       <Calendar size={14} className="mr-1" />
                       {formatDate(portfolio.created)}
@@ -267,7 +265,7 @@ export default function PortfolioManagementPage() {
                   {/* Actions */}
                   <div className="flex items-center space-x-2">
                     <Link href={`/dashboard/portfolio/${portfolio.id}/edit`} className="flex-1">
-                      <Button variant="outline" size="sm" className="w-full">
+                      <Button variant="outline" size="sm" className="w-full border-input hover:bg-accent">
                         <Edit size={14} className="mr-1" />
                         Edit
                       </Button>
@@ -280,7 +278,7 @@ export default function PortfolioManagementPage() {
                         rel="noopener noreferrer"
                         className="flex-1"
                       >
-                        <Button variant="outline" size="sm" className="w-full">
+                        <Button variant="outline" size="sm" className="w-full border-input hover:bg-accent">
                           <Eye size={14} className="mr-1" />
                           View
                         </Button>
@@ -291,7 +289,7 @@ export default function PortfolioManagementPage() {
                       variant="outline"
                       size="sm"
                       onClick={() => handleDelete(portfolio.id)}
-                      className="text-red-600 border-red-600 hover:bg-red-50"
+                      className="text-destructive border-destructive hover:bg-destructive/10"
                     >
                       <Trash2 size={14} />
                     </Button>
@@ -304,4 +302,4 @@ export default function PortfolioManagementPage() {
       </motion.div>
     </div>
   );
-} 
+}

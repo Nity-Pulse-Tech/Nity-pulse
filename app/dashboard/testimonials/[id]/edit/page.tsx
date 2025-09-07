@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -14,6 +15,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { isAxiosError } from '@/utils/errorUtils';
 import type { ErrorResponseData } from '@/lib/types/error';
+import LoadingSpinner from '@/components/common/LoadingSpinner';
 
 export default function EditTestimonialPage() {
   const router = useRouter();
@@ -35,9 +37,7 @@ export default function EditTestimonialPage() {
   useEffect(() => {
     const fetchTestimonial = async () => {
       try {
-        console.log('Fetching testimonial with ID:', testimonialId);
         const testimonial = await dashboardService.getTestimonial(testimonialId);
-        console.log('Fetched testimonial:', testimonial);
         setFormData({
           name: testimonial.author_name,
           content: testimonial.content,
@@ -52,14 +52,8 @@ export default function EditTestimonialPage() {
         }
       } catch (error: unknown) {
         if (isAxiosError(error)) {
-          console.error('Fetch testimonial error:', {
-            message: error.message,
-            response: error.response?.data,
-            status: error.response?.status,
-          });
           toast.error(error.message || 'Failed to fetch testimonial');
         } else {
-          console.error('Unknown error fetching testimonial:', error);
           toast.error('Failed to fetch testimonial');
         }
         router.push('/dashboard/testimonials');
@@ -113,7 +107,6 @@ export default function EditTestimonialPage() {
 
     setIsLoading(true);
     try {
-      console.log('Submitting update for testimonial:', testimonialId, formData);
       if (formData.image) {
         const formDataToSend = new FormData();
         formDataToSend.append('name', formData.name);
@@ -141,14 +134,7 @@ export default function EditTestimonialPage() {
       router.push('/dashboard/testimonials');
     } catch (error: unknown) {
       if (isAxiosError(error)) {
-        console.error('Submission error:', {
-          message: error.message,
-          response: error.response?.data,
-          status: error.response?.status,
-        });
-    
         const data = error.response?.data as ErrorResponseData | undefined;
-    
         const rawErrorMessage =
           error.response?.status === 401
             ? 'Authentication failed. Please log in again.'
@@ -156,13 +142,10 @@ export default function EditTestimonialPage() {
               data?.non_field_errors?.[0] ||
               Object.values(data || {})[0] ||
               'Failed to update testimonial';
-        console.error('Raw error message:', rawErrorMessage);
         const errorMessage =
-        typeof rawErrorMessage === 'string' ? rawErrorMessage : JSON.stringify(rawErrorMessage);
-    
+          typeof rawErrorMessage === 'string' ? rawErrorMessage : JSON.stringify(rawErrorMessage);
         toast.error(errorMessage);
       } else {
-        console.error('Unknown error updating testimonial:', error);
         toast.error('Failed to update testimonial');
       }
     } finally {
@@ -174,8 +157,8 @@ export default function EditTestimonialPage() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading testimonial...</p>
+          <LoadingSpinner />
+          <p className="mt-4 text-muted-foreground">Loading testimonial...</p>
         </div>
       </div>
     );
@@ -187,18 +170,18 @@ export default function EditTestimonialPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="flex items-center justify-between"
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
       >
         <div className="flex items-center space-x-4">
           <Link href="/dashboard/testimonials">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="border-input hover:bg-accent">
               <ArrowLeft size={16} className="mr-2" />
               Back to Testimonials
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Edit Testimonial</h1>
-            <p className="text-gray-600">Update the testimonial content and settings</p>
+            <h1 className="text-2xl font-bold text-foreground">Edit Testimonial</h1>
+            <p className="text-muted-foreground">Update the testimonial content and settings</p>
           </div>
         </div>
       </motion.div>
@@ -207,12 +190,12 @@ export default function EditTestimonialPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="bg-white rounded-lg shadow-md p-6"
+        className="card p-6"
       >
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Name *
               </label>
               <Input
@@ -221,11 +204,12 @@ export default function EditTestimonialPage() {
                 onChange={handleInputChange}
                 placeholder="Client name"
                 required
+                className="border-input focus:ring-ring"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Position
               </label>
               <Input
@@ -233,11 +217,12 @@ export default function EditTestimonialPage() {
                 value={formData.position}
                 onChange={handleInputChange}
                 placeholder="CEO, Manager, etc."
+                className="border-input focus:ring-ring"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Company
               </label>
               <Input
@@ -245,11 +230,12 @@ export default function EditTestimonialPage() {
                 value={formData.company}
                 onChange={handleInputChange}
                 placeholder="Company name"
+                className="border-input focus:ring-ring"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Rating *
               </label>
               <div className="flex items-center space-x-2">
@@ -259,18 +245,18 @@ export default function EditTestimonialPage() {
                     type="button"
                     onClick={() => handleRatingChange(star)}
                     className={`p-1 rounded ${
-                      star <= formData.rating ? 'text-yellow-400' : 'text-gray-300'
-                    } hover:text-yellow-400 transition-colors`}
+                      star <= formData.rating ? 'text-secondary' : 'text-muted-foreground'
+                    } hover:text-secondary transition-colors`}
                   >
                     <Star size={20} fill={star <= formData.rating ? 'currentColor' : 'none'} />
                   </button>
                 ))}
-                <span className="text-sm text-gray-600 ml-2">{formData.rating} out of 5</span>
+                <span className="text-sm text-muted-foreground ml-2">{formData.rating} out of 5</span>
               </div>
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Testimonial Content *
               </label>
               <Textarea
@@ -280,18 +266,19 @@ export default function EditTestimonialPage() {
                 placeholder="Write the testimonial content here..."
                 rows={4}
                 required
+                className="border-input focus:ring-ring"
               />
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Status
               </label>
               <select
                 name="status"
                 value={formData.status}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-3 py-2 border border-input rounded-md focus:ring-2 focus:ring-ring"
               >
                 <option value="DRAFT">Draft</option>
                 <option value="PUBLISHED">Published</option>
@@ -300,14 +287,14 @@ export default function EditTestimonialPage() {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Profile Image (Optional)
               </label>
-              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-border rounded-md">
                 <div className="space-y-1 text-center">
-                  <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                  <div className="flex text-sm text-gray-600">
-                    <label className="relative cursor-pointer bg-white rounded-md font-medium text-purple-600 hover:text-purple-500">
+                  <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
+                  <div className="flex text-sm text-muted-foreground">
+                    <label className="relative cursor-pointer bg-card rounded-md font-medium text-primary hover:text-primary/90">
                       <span>Upload a file</span>
                       <input
                         type="file"
@@ -318,12 +305,12 @@ export default function EditTestimonialPage() {
                     </label>
                     <p className="pl-1">or drag and drop</p>
                   </div>
-                  <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                  <p className="text-xs text-muted-foreground">PNG, JPG, GIF up to 10MB</p>
                 </div>
               </div>
               {imagePreview && (
                 <div className="mt-4">
-                  <p className="text-sm font-medium text-gray-700 mb-2">Image Preview</p>
+                  <p className="text-sm font-medium text-foreground mb-2">Image Preview</p>
                   <Image
                     src={imagePreview}
                     alt="Selected image preview"
@@ -336,15 +323,15 @@ export default function EditTestimonialPage() {
             </div>
           </div>
 
-          <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+          <div className="flex flex-col sm:flex-row sm:justify-end space-x-4 pt-6 border-t border-border gap-4">
             <Link href="/dashboard/testimonials">
-              <Button type="button" variant="outline">
+              <Button type="button" variant="outline" className="border-input hover:bg-accent">
                 Cancel
               </Button>
             </Link>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading} className="btn-primary">
               {isLoading ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <LoadingSpinner />
               ) : (
                 <>
                   <Save size={16} className="mr-2" />

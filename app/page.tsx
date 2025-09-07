@@ -9,10 +9,13 @@ import Projects from '@/components/Projects';
 import Testimonials from '@/components/Testimonials';
 import Blog from '@/components/Blog';
 import Contact from '@/components/Contact';
-import Newsletter from '@/components/Newsletter';
+import WhatsAppCommunity from '@/components/WhatsAppCommunity';
 // import Footer from '@/components/Footer';
 import { publicApi } from '@/lib/api';
 import type { Portfolio, Testimonial as TestimonialType } from '@/lib/types/dashboard';
+import LoadingSpinner from '@/components/common/LoadingSpinner';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 interface BlogPost {
   id: string;
@@ -59,27 +62,21 @@ export default function HomePage() {
   }, []);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
     <div className="min-h-screen">
+      <Header />
       <Hero />
       <About />
       <Services />
       <Projects portfolios={portfolios} />
       <Testimonials testimonials={testimonials} />
       <Blog blogs={blogs} />
+      <WhatsAppCommunity />
       <Contact />
-      <Newsletter />
-      {/* <Footer /> */}
+      <Footer />
     </div>
   );
 }

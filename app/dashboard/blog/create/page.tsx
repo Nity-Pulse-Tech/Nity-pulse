@@ -33,13 +33,10 @@ export default function CreateBlogPage() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      console.log('Selected image:', file); // Debug: Log selected file
       setSelectedImage(file);
       const reader = new FileReader();
       reader.onload = (e) => {
-        const result = e.target?.result as string;
-        console.log('Image preview URL:', result); // Debug: Log preview URL
-        setImagePreview(result);
+        setImagePreview(e.target?.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -73,11 +70,6 @@ export default function CreateBlogPage() {
         blogFormData.append('image', selectedImage);
       }
 
-      // Debug: Log FormData contents
-      for (const [key, value] of blogFormData.entries()) {
-        console.log(`${key}:`, value);
-      }
-
       await dashboardService.createBlog({
         title: formData.title,
         content: formData.content,
@@ -101,17 +93,17 @@ export default function CreateBlogPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center space-x-4">
           <Link href="/dashboard/blog">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="border-input hover:bg-accent">
               <ArrowLeft size={16} className="mr-2" />
               Back to Blogs
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Create Blog Post</h1>
-            <p className="mt-2 text-gray-600">
+            <h1 className="text-3xl font-bold text-foreground">Create Blog Post</h1>
+            <p className="mt-2 text-muted-foreground">
               Write and publish a new blog post for your audience.
             </p>
           </div>
@@ -123,12 +115,12 @@ export default function CreateBlogPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-white rounded-lg shadow"
+        className="card p-6"
       >
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* Title */}
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="title" className="block text-sm font-medium text-foreground mb-2">
               Blog Title *
             </label>
             <Input
@@ -139,13 +131,13 @@ export default function CreateBlogPage() {
               onChange={handleInputChange}
               placeholder="Enter your blog post title"
               required
-              className="w-full"
+              className="w-full border-input focus:ring-ring"
             />
           </div>
 
           {/* Status */}
           <div>
-            <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="status" className="block text-sm font-medium text-foreground mb-2">
               Status
             </label>
             <select
@@ -153,7 +145,7 @@ export default function CreateBlogPage() {
               name="status"
               value={formData.status}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-input rounded-md focus:ring-2 focus:ring-ring focus:border-transparent"
             >
               <option value="DRAFT">Draft</option>
               <option value="PUBLISHED">Published</option>
@@ -163,7 +155,7 @@ export default function CreateBlogPage() {
 
           {/* Image Upload */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Featured Image
             </label>
             <div className="space-y-4">
@@ -174,25 +166,25 @@ export default function CreateBlogPage() {
                     alt="Preview"
                     width={800}
                     height={400}
-                    className="w-full h-64 object-cover rounded-lg border border-gray-200"
+                    className="w-full h-64 object-cover rounded-lg border border-border"
                   />
                   <button
                     type="button"
                     onClick={removeImage}
-                    className="absolute top-2 right-2 p-1 bg-red-600 text-white rounded-full hover:bg-red-700"
+                    className="absolute top-2 right-2 p-1 bg-destructive text-destructive-foreground rounded-full hover:bg-destructive/90"
                   >
                     <X size={16} />
                   </button>
                 </div>
               ) : (
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                  <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
+                <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
+                  <ImageIcon className="mx-auto h-12 w-12 text-muted-foreground" />
                   <div className="mt-4">
                     <label htmlFor="image" className="cursor-pointer">
-                      <span className="mt-2 block text-sm font-medium text-gray-900">
+                      <span className="mt-2 block text-sm font-medium text-foreground">
                         Upload an image
                       </span>
-                      <span className="mt-1 block text-xs text-gray-500">
+                      <span className="mt-1 block text-xs text-muted-foreground">
                         PNG, JPG, GIF up to 10MB
                       </span>
                     </label>
@@ -212,7 +204,7 @@ export default function CreateBlogPage() {
 
           {/* Content */}
           <div>
-            <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="content" className="block text-sm font-medium text-foreground mb-2">
               Content *
             </label>
             <textarea
@@ -223,17 +215,17 @@ export default function CreateBlogPage() {
               placeholder="Write your blog post content here..."
               required
               rows={15}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-vertical"
+              className="w-full px-3 py-2 border border-input rounded-md focus:ring-2 focus:ring-ring focus:border-transparent resize-vertical"
             />
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-muted-foreground">
               {formData.content.length} characters
             </p>
           </div>
 
           {/* Form Actions */}
-          <div className="flex items-center justify-between pt-6 border-t border-gray-200">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-6 border-t border-border gap-4">
             <Link href="/dashboard/blog">
-              <Button variant="outline" type="button">
+              <Button variant="outline" type="button" className="border-input hover:bg-accent">
                 Cancel
               </Button>
             </Link>
@@ -241,11 +233,11 @@ export default function CreateBlogPage() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="bg-purple-600 hover:bg-purple-700 text-white"
+                className="btn-primary"
               >
                 {isLoading ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mr-2"></div>
                     Creating...
                   </>
                 ) : (
@@ -265,10 +257,10 @@ export default function CreateBlogPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="bg-blue-50 rounded-lg p-6"
+        className="bg-primary/10 rounded-lg p-6"
       >
-        <h3 className="text-lg font-medium text-blue-900 mb-3">Writing Tips</h3>
-        <ul className="space-y-2 text-sm text-blue-800">
+        <h3 className="text-lg font-medium text-primary mb-3">Writing Tips</h3>
+        <ul className="space-y-2 text-sm text-primary">
           <li>• Write a compelling title that grabs attention</li>
           <li>• Use clear, concise language</li>
           <li>• Break up content with paragraphs and headings</li>

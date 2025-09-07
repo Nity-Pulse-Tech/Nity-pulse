@@ -19,6 +19,7 @@ import {
   Quote
 } from 'lucide-react';
 import { isAxiosError } from '@/utils/errorUtils';
+import LoadingSpinner from '@/components/common/LoadingSpinner';
 
 export default function TestimonialsManagementPage() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
@@ -54,7 +55,6 @@ export default function TestimonialsManagementPage() {
   const filterTestimonials = () => {
     let filtered = testimonials;
 
-    // Search filter
     if (searchTerm) {
       filtered = filtered.filter(testimonial =>
         testimonial.author_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -62,7 +62,6 @@ export default function TestimonialsManagementPage() {
       );
     }
 
-    // Status filter
     if (statusFilter !== 'ALL') {
       filtered = filtered.filter(testimonial => testimonial.status === statusFilter);
     }
@@ -78,7 +77,7 @@ export default function TestimonialsManagementPage() {
     try {
       await dashboardService.deleteTestimonial(id);
       toast.success('Testimonial deleted successfully');
-      loadTestimonials(); // Reload the list
+      loadTestimonials();
     } catch (error: unknown) {
       if (isAxiosError(error)) {
         toast.error(error.message || 'Failed to delete testimonial');
@@ -99,13 +98,13 @@ export default function TestimonialsManagementPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PUBLISHED':
-        return 'bg-green-100 text-green-800';
+        return 'bg-primary/10 text-primary';
       case 'DRAFT':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-secondary/10 text-secondary';
       case 'ARCHIVED':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -113,8 +112,8 @@ export default function TestimonialsManagementPage() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading testimonials...</p>
+          <LoadingSpinner />
+          <p className="mt-4 text-muted-foreground">Loading testimonials...</p>
         </div>
       </div>
     );
@@ -123,15 +122,15 @@ export default function TestimonialsManagementPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Testimonials Management</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="text-3xl font-bold text-foreground">Testimonials Management</h1>
+          <p className="mt-2 text-muted-foreground">
             Manage customer testimonials and reviews to build trust with your audience.
           </p>
         </div>
         <Link href="/dashboard/testimonials/create">
-          <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+          <Button className="btn-primary">
             <Plus size={20} className="mr-2" />
             Add Testimonial
           </Button>
@@ -143,28 +142,28 @@ export default function TestimonialsManagementPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-white rounded-lg shadow p-6"
+        className="card p-6"
       >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
             <Input
               type="text"
               placeholder="Search testimonials..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 border-input focus:ring-ring"
             />
           </div>
 
           {/* Status Filter */}
           <div className="relative">
-            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-input rounded-md focus:ring-2 focus:ring-ring focus:border-transparent"
             >
               <option value="ALL">All Status</option>
               <option value="DRAFT">Draft</option>
@@ -174,9 +173,9 @@ export default function TestimonialsManagementPage() {
           </div>
 
           {/* Stats */}
-          <div className="flex items-center justify-center bg-gray-50 rounded-md p-3">
-            <MessageSquare className="text-gray-600 mr-2" size={20} />
-            <span className="text-sm text-gray-600">
+          <div className="flex items-center justify-center bg-accent rounded-md p-3">
+            <MessageSquare className="text-muted-foreground mr-2" size={20} />
+            <span className="text-sm text-muted-foreground">
               {filteredTestimonials.length} of {testimonials.length} testimonials
             </span>
           </div>
@@ -188,17 +187,17 @@ export default function TestimonialsManagementPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="bg-white rounded-lg shadow overflow-hidden"
+        className="card overflow-hidden"
       >
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Testimonials</h2>
+        <div className="px-6 py-4 border-b border-border">
+          <h2 className="text-lg font-semibold text-foreground">Testimonials</h2>
         </div>
 
         {filteredTestimonials.length === 0 ? (
           <div className="p-8 text-center">
-            <MessageSquare className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No testimonials found</h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground" />
+            <h3 className="mt-2 text-sm font-medium text-foreground">No testimonials found</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
               {searchTerm || statusFilter !== 'ALL' 
                 ? 'Try adjusting your search or filter criteria.'
                 : 'Get started by adding your first testimonial.'
@@ -207,7 +206,7 @@ export default function TestimonialsManagementPage() {
             {!searchTerm && statusFilter === 'ALL' && (
               <div className="mt-6">
                 <Link href="/dashboard/testimonials/create">
-                  <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+                  <Button className="btn-primary">
                     <Plus size={20} className="mr-2" />
                     Add Testimonial
                   </Button>
@@ -216,38 +215,38 @@ export default function TestimonialsManagementPage() {
             )}
           </div>
         ) : (
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-border">
             {filteredTestimonials.map((testimonial) => (
               <motion.div
                 key={testimonial.id}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="p-6 hover:bg-gray-50 transition-colors"
+                className="p-6 hover:bg-accent transition-colors"
               >
-                <div className="flex items-start justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-3 mb-3">
-                      <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                        <User className="text-purple-600" size={20} />
+                      <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                        <User className="text-primary" size={20} />
                       </div>
                       <div>
-                        <h3 className="text-lg font-medium text-gray-900">
+                        <h3 className="text-lg font-medium text-foreground">
                           {testimonial.author_name}
                         </h3>
                         <div className="flex items-center space-x-2">
                           <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(testimonial.status)}`}>
                             {testimonial.status}
                           </span>
-                          <span className="text-sm text-gray-500">
+                          <span className="text-sm text-muted-foreground">
                             {formatDate(testimonial.created)}
                           </span>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="relative bg-gray-50 rounded-lg p-4">
-                      <Quote className="absolute top-2 left-2 text-gray-300" size={16} />
-                      <p className="text-gray-700 pl-6">
+                    <div className="relative bg-accent rounded-lg p-4">
+                      <Quote className="absolute top-2 left-2 text-muted-foreground" size={16} />
+                      <p className="text-foreground pl-6">
                         {testimonial.content.length > 200 
                           ? `${testimonial.content.substring(0, 200)}...` 
                           : testimonial.content
@@ -256,9 +255,9 @@ export default function TestimonialsManagementPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-2 ml-4">
+                  <div className="flex items-center space-x-2">
                     <Link href={`/dashboard/testimonials/${testimonial.id}/edit`}>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="border-input hover:bg-accent">
                         <Edit size={16} className="mr-1" />
                         Edit
                       </Button>
@@ -268,7 +267,7 @@ export default function TestimonialsManagementPage() {
                       variant="outline"
                       size="sm"
                       onClick={() => handleDelete(testimonial.id)}
-                      className="text-red-600 border-red-600 hover:bg-red-50"
+                      className="text-destructive border-destructive hover:bg-destructive/10"
                     >
                       <Trash2 size={16} className="mr-1" />
                       Delete

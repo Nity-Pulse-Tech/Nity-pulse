@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -11,8 +12,8 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Upload, Save } from 'lucide-react';
 import Link from 'next/link';
 import { isAxiosError } from '@/utils/errorUtils';
-import type {  PortfolioStatus } from "@/lib/types/dashboard";
-
+import type { PortfolioStatus } from '@/lib/types/dashboard';
+import LoadingSpinner from '@/components/common/LoadingSpinner';
 
 export default function EditPortfolioPage() {
   const router = useRouter();
@@ -27,7 +28,7 @@ export default function EditPortfolioPage() {
     technologies: '',
     project_url: '',
     github_url: '',
-    status: 'DRAFT',
+    status: 'DRAFT' as PortfolioStatus,
     image: null as File | null,
   });
 
@@ -69,7 +70,7 @@ export default function EditPortfolioPage() {
       ...prev,
       [name]: value,
     }));
-  }
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -124,8 +125,8 @@ export default function EditPortfolioPage() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading portfolio...</p>
+          <LoadingSpinner />
+          <p className="mt-4 text-muted-foreground">Loading portfolio...</p>
         </div>
       </div>
     );
@@ -137,18 +138,18 @@ export default function EditPortfolioPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="flex items-center justify-between"
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
       >
         <div className="flex items-center space-x-4">
           <Link href="/dashboard/portfolio">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="border-input hover:bg-accent">
               <ArrowLeft size={16} className="mr-2" />
               Back to Portfolio
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Edit Portfolio Item</h1>
-            <p className="text-gray-600">Update your portfolio project details</p>
+            <h1 className="text-2xl font-bold text-foreground">Edit Portfolio Item</h1>
+            <p className="text-muted-foreground">Update your portfolio project details</p>
           </div>
         </div>
       </motion.div>
@@ -157,12 +158,12 @@ export default function EditPortfolioPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="bg-white rounded-lg shadow-md p-6"
+        className="card p-6"
       >
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Title *
               </label>
               <Input
@@ -171,11 +172,12 @@ export default function EditPortfolioPage() {
                 onChange={handleInputChange}
                 placeholder="Project title"
                 required
+                className="border-input focus:ring-ring"
               />
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Description *
               </label>
               <Textarea
@@ -185,11 +187,12 @@ export default function EditPortfolioPage() {
                 placeholder="Project description"
                 rows={4}
                 required
+                className="border-input focus:ring-ring"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Technologies
               </label>
               <Input
@@ -197,26 +200,28 @@ export default function EditPortfolioPage() {
                 value={formData.technologies}
                 onChange={handleInputChange}
                 placeholder="React, Node.js, MongoDB"
+                className="border-input focus:ring-ring"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Status
               </label>
               <select
                 name="status"
                 value={formData.status}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-3 py-2 border border-input rounded-md focus:ring-2 focus:ring-ring"
               >
                 <option value="DRAFT">Draft</option>
                 <option value="PUBLISHED">Published</option>
+                <option value="ARCHIVED">Archived</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Project URL
               </label>
               <Input
@@ -225,11 +230,12 @@ export default function EditPortfolioPage() {
                 value={formData.project_url}
                 onChange={handleInputChange}
                 placeholder="https://example.com"
+                className="border-input focus:ring-ring"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 GitHub URL
               </label>
               <Input
@@ -238,18 +244,19 @@ export default function EditPortfolioPage() {
                 value={formData.github_url}
                 onChange={handleInputChange}
                 placeholder="https://github.com/username/repo"
+                className="border-input focus:ring-ring"
               />
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Project Image
               </label>
-              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-border rounded-md">
                 <div className="space-y-1 text-center">
-                  <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                  <div className="flex text-sm text-gray-600">
-                    <label className="relative cursor-pointer bg-white rounded-md font-medium text-purple-600 hover:text-purple-500">
+                  <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
+                  <div className="flex text-sm text-muted-foreground">
+                    <label className="relative cursor-pointer bg-card rounded-md font-medium text-primary hover:text-primary/90">
                       <span>Upload a file</span>
                       <input
                         type="file"
@@ -260,21 +267,21 @@ export default function EditPortfolioPage() {
                     </label>
                     <p className="pl-1">or drag and drop</p>
                   </div>
-                  <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                  <p className="text-xs text-muted-foreground">PNG, JPG, GIF up to 10MB</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+          <div className="flex flex-col sm:flex-row sm:justify-end space-x-4 pt-6 border-t border-border gap-4">
             <Link href="/dashboard/portfolio">
-              <Button type="button" variant="outline">
+              <Button type="button" variant="outline" className="border-input hover:bg-accent">
                 Cancel
               </Button>
             </Link>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading} className="btn-primary">
               {isLoading ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <LoadingSpinner />
               ) : (
                 <>
                   <Save size={16} className="mr-2" />

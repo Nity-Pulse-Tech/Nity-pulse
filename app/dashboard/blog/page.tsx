@@ -39,13 +39,12 @@ export default function BlogManagementPage() {
       setIsLoading(true);
       const data = await dashboardService.getAllBlogs();
       setBlogs(data);
-    }  catch (error: unknown) {
+    } catch (error: unknown) {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
         toast.error('Failed to load blogs');
       }
-    
     } finally {
       setIsLoading(false);
     }
@@ -54,7 +53,6 @@ export default function BlogManagementPage() {
   const filterBlogs = () => {
     let filtered = blogs;
 
-    // Search filter
     if (searchTerm) {
       filtered = filtered.filter(blog =>
         blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -62,7 +60,6 @@ export default function BlogManagementPage() {
       );
     }
 
-    // Status filter
     if (statusFilter !== 'ALL') {
       filtered = filtered.filter(blog => blog.status === statusFilter);
     }
@@ -78,7 +75,7 @@ export default function BlogManagementPage() {
     try {
       await dashboardService.deleteBlog(id);
       toast.success('Blog post deleted successfully');
-      loadBlogs(); // Reload the list
+      loadBlogs();
     } catch (error: unknown) {
       if (error instanceof Error) {
         toast.error(error.message);
@@ -86,7 +83,6 @@ export default function BlogManagementPage() {
         toast.error('Failed to delete blog post');
       }
     }
-    
   };
 
   const formatDate = (dateString: string) => {
@@ -100,13 +96,13 @@ export default function BlogManagementPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PUBLISHED':
-        return 'bg-green-100 text-green-800';
+        return 'bg-primary/10 text-primary';
       case 'DRAFT':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-secondary/10 text-secondary';
       case 'ARCHIVED':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -114,8 +110,8 @@ export default function BlogManagementPage() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading blogs...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading blogs...</p>
         </div>
       </div>
     );
@@ -124,15 +120,15 @@ export default function BlogManagementPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Blog Management</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="text-3xl font-bold text-foreground">Blog Management</h1>
+          <p className="mt-2 text-muted-foreground">
             Manage your blog posts, create new content, and track their status.
           </p>
         </div>
         <Link href="/dashboard/blog/create">
-          <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+          <Button className="btn-primary">
             <Plus size={20} className="mr-2" />
             Create Blog Post
           </Button>
@@ -144,28 +140,28 @@ export default function BlogManagementPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-white rounded-lg shadow p-6"
+        className="card p-6"
       >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
             <Input
               type="text"
               placeholder="Search blogs..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 border-input focus:ring-ring"
             />
           </div>
 
           {/* Status Filter */}
           <div className="relative">
-            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={20} />
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 border border-input rounded-md focus:ring-2 focus:ring-ring focus:border-transparent"
             >
               <option value="ALL">All Status</option>
               <option value="DRAFT">Draft</option>
@@ -175,9 +171,9 @@ export default function BlogManagementPage() {
           </div>
 
           {/* Stats */}
-          <div className="flex items-center justify-center bg-gray-50 rounded-md p-3">
-            <FileText className="text-gray-600 mr-2" size={20} />
-            <span className="text-sm text-gray-600">
+          <div className="flex items-center justify-center bg-accent rounded-md p-3">
+            <FileText className="text-muted-foreground mr-2" size={20} />
+            <span className="text-sm text-muted-foreground">
               {filteredBlogs.length} of {blogs.length} posts
             </span>
           </div>
@@ -189,17 +185,17 @@ export default function BlogManagementPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="bg-white rounded-lg shadow overflow-hidden"
+        className="card overflow-hidden"
       >
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Blog Posts</h2>
+        <div className="px-6 py-4 border-b border-border">
+          <h2 className="text-lg font-semibold text-foreground">Blog Posts</h2>
         </div>
 
         {filteredBlogs.length === 0 ? (
           <div className="p-8 text-center">
-            <FileText className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No blog posts found</h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
+            <h3 className="mt-2 text-sm font-medium text-foreground">No blog posts found</h3>
+            <p className="mt-1 text-sm text-muted-foreground">
               {searchTerm || statusFilter !== 'ALL' 
                 ? 'Try adjusting your search or filter criteria.'
                 : 'Get started by creating your first blog post.'
@@ -208,7 +204,7 @@ export default function BlogManagementPage() {
             {!searchTerm && statusFilter === 'ALL' && (
               <div className="mt-6">
                 <Link href="/dashboard/blog/create">
-                  <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+                  <Button className="btn-primary">
                     <Plus size={20} className="mr-2" />
                     Create Blog Post
                   </Button>
@@ -217,18 +213,18 @@ export default function BlogManagementPage() {
             )}
           </div>
         ) : (
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-border">
             {filteredBlogs.map((blog) => (
               <motion.div
                 key={blog.id}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="p-6 hover:bg-gray-50 transition-colors"
+                className="p-4 sm:p-6 hover:bg-accent transition-colors"
               >
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-3">
-                      <h3 className="text-lg font-medium text-gray-900 truncate">
+                      <h3 className="text-lg font-medium text-foreground truncate">
                         {blog.title}
                       </h3>
                       <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(blog.status)}`}>
@@ -236,12 +232,12 @@ export default function BlogManagementPage() {
                       </span>
                     </div>
                     
-                    <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
+                    <div className="mt-2 flex flex-col sm:flex-row sm:items-center sm:space-x-4 text-sm text-muted-foreground">
                       <div className="flex items-center">
                         <Calendar size={16} className="mr-1" />
                         {formatDate(blog.created)}
                       </div>
-                      <div className="flex items-center">
+                      <div className="flex items-center mt-2 sm:mt-0">
                         <FileText size={16} className="mr-1" />
                         {blog.content.length > 100 
                           ? `${blog.content.substring(0, 100)}...` 
@@ -252,21 +248,21 @@ export default function BlogManagementPage() {
 
                     {blog.image && (
                       <div className="mt-2">
-                        <span className="text-xs text-gray-500">Has image</span>
+                        <span className="text-xs text-muted-foreground">Has image</span>
                       </div>
                     )}
                   </div>
 
-                  <div className="flex items-center space-x-2 ml-4">
+                  <div className="flex items-center space-x-2">
                     <Link href={`/dashboard/blog/${blog.id}/edit`}>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="border-input hover:bg-accent">
                         <Edit size={16} className="mr-1" />
                         Edit
                       </Button>
                     </Link>
                     
                     <Link href={`/blog/${blog.id}`}>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="border-input hover:bg-accent">
                         <Eye size={16} className="mr-1" />
                         View
                       </Button>
@@ -276,7 +272,7 @@ export default function BlogManagementPage() {
                       variant="outline"
                       size="sm"
                       onClick={() => handleDelete(blog.id)}
-                      className="text-red-600 border-red-600 hover:bg-red-50"
+                      className="text-destructive border-destructive hover:bg-destructive/10"
                     >
                       <Trash2 size={16} className="mr-1" />
                       Delete
@@ -290,4 +286,4 @@ export default function BlogManagementPage() {
       </motion.div>
     </div>
   );
-} 
+}

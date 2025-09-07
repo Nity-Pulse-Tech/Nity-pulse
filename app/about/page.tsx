@@ -14,6 +14,9 @@ import {
 import Link from 'next/link';
 import { motion, useInView } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
+import { dashboardService } from '@/lib/services/dashboardService';
+import { toast } from 'sonner';
+import { isAxiosError } from '@/utils/errorUtils';
 
 const useCountUp = (end: number, duration: number, inView: boolean) => {
   const [count, setCount] = useState(0);
@@ -38,6 +41,50 @@ const useCountUp = (end: number, duration: number, inView: boolean) => {
   return count;
 };
 
+function AchievementCard({
+  icon: IconComponent,
+  countValue,
+  title,
+  description,
+  isInView,
+  index,
+}: {
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  countValue: number;
+  title: string;
+  description: string;
+  isInView: boolean;
+  index: number;
+}) {
+  const count = useCountUp(countValue, 2000, isInView);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+    >
+      <Card className="card h-full p-6 text-center hover:shadow-lg transition-all duration-300 border border-border">
+        <CardHeader className="pb-4">
+          <div className="w-16 h-16 bg-gradient-to-r from-secondary to-secondary/80 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-md">
+            <IconComponent size={28} className="text-secondary-foreground" />
+          </div>
+          <h3 className="text-3xl font-bold text-black dark:text-white">
+            {count}+
+          </h3>
+          <p className="text-lg font-semibold text-black dark:text-white mt-2">
+            {title.split('+ ')[1]}
+          </p>
+        </CardHeader>
+        <CardContent>
+          <p className="text-black/60 dark:text-white/60 leading-relaxed">{description}</p>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+}
+
 export default function AboutPage() {
   const values = [
     {
@@ -61,6 +108,10 @@ export default function AboutPage() {
       description: "Transparency and ethical practices are at the core of our partnerships, building trust and fostering long-term relationships with our clients."
     }
   ];
+
+  const [companyInfo, setCompanyInfo] = useState({
+    phones: ['+33 6 05 50 85 42'],
+  });
 
   const achievements = [
     {
@@ -122,6 +173,32 @@ export default function AboutPage() {
     }
   ];
 
+  useEffect(() => {
+    const fetchCompanySettings = async () => {
+      try {
+        const settings = await dashboardService.getCompanySettings();
+        setCompanyInfo({
+          phones: settings.phones || ['+33 6 05 50 85 42'],
+        });
+      } catch (error: unknown) {
+        console.error('Failed to fetch company settings:', error);
+        if (isAxiosError(error)) {
+          if (error.response?.status === 401) {
+            toast.error('Authentication failed. Please log in to update company settings.');
+          } else if (error.response?.status === 404) {
+            toast.info('No company settings found. Using default contact information.');
+          } else {
+            toast.error('Failed to fetch company settings.');
+          }
+        } else {
+          toast.error('Failed to fetch company settings.');
+        }
+      }
+    };
+
+    fetchCompanySettings();
+  }, []);
+
   const milestonesRef = useRef(null);
   const isMilestonesInView = useInView(milestonesRef, { once: true, amount: 0.3 });
 
@@ -147,7 +224,13 @@ export default function AboutPage() {
               About Nity Pulse
             </h1>
             <p className="text-xl md:text-2xl text-primary-foreground/90 max-w-3xl mx-auto">
-              We're a dynamic team dedicated to crafting innovative solutions that empower collaboration and drive impact.
+              We're a dynamic team dedicated to crafting innovative solutions that empower collaboration and drive impact. Contact us at&nbsp;
+              {companyInfo.phones.map((phone, index) => (
+                <span key={`phone-${index}`} className="inline-flex">
+                  <strong>{phone}</strong>
+                  {index < companyInfo.phones.length - 1 && <span>,&nbsp;</span>}
+                </span>
+              ))}
             </p>
           </motion.div>
         </div>
@@ -291,36 +374,17 @@ export default function AboutPage() {
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            {achievements.map((achievement, index) => {
-              const IconComponent = achievement.icon;
-              const count = useCountUp(achievement.count, 2000, isMilestonesInView);
-              return (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <Card className="card h-full p-6 text-center hover:shadow-lg transition-all duration-300 border border-border">
-                    <CardHeader className="pb-4">
-                      <div className="w-16 h-16 bg-gradient-to-r from-secondary to-secondary/80 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-md">
-                        <IconComponent size={28} className="text-secondary-foreground" />
-                      </div>
-                      <h3 className="text-3xl font-bold text-black dark:text-white">
-                        {count}+
-                      </h3>
-                      <p className="text-lg font-semibold text-black dark:text-white mt-2">
-                        {achievement.title.split('+ ')[1]}
-                      </p>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-black/60 dark:text-white/60 leading-relaxed">{achievement.description}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              );
-            })}
+            {achievements.map((achievement, index) => (
+              <AchievementCard
+                key={index}
+                icon={achievement.icon}
+                countValue={achievement.count}
+                title={achievement.title}
+                description={achievement.description}
+                isInView={isMilestonesInView}
+                index={index}
+              />
+            ))}
           </motion.div>
         </div>
       </motion.section>
@@ -405,13 +469,19 @@ export default function AboutPage() {
               Ready to Collaborate?
             </h2>
             <p className="text-xl text-primary-foreground/90 max-w-3xl mx-auto mb-8">
-              Partner with Nity Pulse to transform your ideas into impactful solutions.
+              Partner with Nity Pulse to transform your ideas into impactful solutions. Contact us at&nbsp;
+              {companyInfo.phones.map((phone, index) => (
+                <span key={`phone-${index}`} className="inline-flex">
+                  <strong>{phone}</strong>
+                  {index < companyInfo.phones.length - 1 && <span>,&nbsp;</span>}
+                </span>
+              ))}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/#contact">
                 <Button size="lg" className="bg-secondary text-secondary-foreground hover:bg-secondary/90 hover:shadow-lg rounded-xl px-8 py-4 font-semibold transition-all duration-300 text-lg">
                   Start Now
-                  <ArrowRight size={20} className="ml-2 text-secondary-foreground" />
+                  <ArrowRight size={20} className="text-secondary-foreground" />
                 </Button>
               </Link>
             </div>
