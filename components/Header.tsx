@@ -35,8 +35,24 @@ const Header = () => {
       transition={{ duration: 0.5 }}
     >
       <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-        <Link href="/">
-          <Image src="/logo.png" alt="Nity Pulse Logo" width={120} height={40} className="h-10 w-auto" />
+      <Link href="/" className="flex items-center h-12 mt-2"> 
+          {/* Light theme logo */}
+          <Image
+            src="/logo_sans_fond.png"
+            alt="Nity Pulse Logo Dark"
+            width={120}
+            height={100}
+            className="max-h-40 w-auto block dark:hidden object-contain"
+          />
+
+          {/* Dark theme logo */}
+          <Image
+            src="/logo_sans_fond.png"
+            alt="Nity Pulse Logo Light"
+            width={120}
+            height={120}
+            className="max-h-40 w-auto hidden dark:block object-contain"
+          />
         </Link>
 
         <nav className="hidden lg:flex items-center space-x-6">

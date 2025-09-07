@@ -45,7 +45,7 @@ export default function Projects({ portfolios }: ProjectsProps) {
             className="text-center"
           >
             <p className="text-gray-600 text-lg">No projects available at the moment.</p>
-            <Button asChild className="mt-6 bg-purple-600 hover:bg-purple-700 text-white">
+            <Button asChild className="mt-6 bg-primary hover:bg-primary/80 text-white">
               <Link href="/portfolio">View All Projects</Link>
             </Button>
           </motion.div>
@@ -131,7 +131,7 @@ export default function Projects({ portfolios }: ProjectsProps) {
             transition={{ duration: 0.5, delay: 0.6 }}
             className="text-center mt-12"
           >
-            <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-6 py-2">
+            <Button asChild className="bg-primary  text-white rounded-full px-6 py-2">
               <Link href="/portfolio">View All Projects</Link>
             </Button>
           </motion.div>

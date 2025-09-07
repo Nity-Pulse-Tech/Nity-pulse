@@ -12,11 +12,12 @@
 @utility font-poppins {
   font-family: "Poppins", sans-serif;
 }
+
 /* Root variables for Nity Pulse branding and shadcn/ui */
 :root {
   /* Branding */
-  --primary: #001F54; /* Bleu électrique (Primary en mode clair) */
-  --secondary: #FFA500; /* Orange vif (Secondary en mode clair) */
+  --primary: #497DC4;
+  --secondary: #FE6A2C;
   --black: #1F1F1F; /* Noir profond */
   --white: #FFFFFF; /* Blanc pur */
 
@@ -77,10 +78,10 @@
   --popover-foreground: #FFFFFF;
 
   /* Branding */
-  --primary: #001F54; /* Bleu classique (Primary en mode sombre) */
-  --primary-foreground: #FFFFFF; /* Blanc lisible sur bleu classique */
-  --secondary: #FF8C00; /* Orange foncé (Secondary en mode sombre) */
-  --secondary-foreground: #1F1F1F;
+  --primary: #497DC4; /* Retain primary color in dark mode */
+  --primary-foreground: #FFFFFF; /* Blanc lisible sur bleu */
+  --secondary: #FE6A2C; /* Retain secondary color in dark mode */
+  --secondary-foreground: #FFFFFF; /* Blanc lisible sur orange */
 
   /* Muted / Neutral */
   --muted: #4B5563;
@@ -95,24 +96,24 @@
   /* Borders / Inputs */
   --border: #374151;
   --input: #374151;
-  --ring: #001F54; /* Glow bleu classique */
+  --ring: #497DC4; /* Match ring to primary color */
 
   /* Charts */
   --chart-1: #FFA500; /* Orange vif */
   --chart-2: #F4A261; /* Orange doux */
   --chart-3: #ADD8E6; /* Bleu clair */
   --chart-4: #00CED1; /* Bleu turquoise */
-  --chart-5: #001F54; /* Bleu profond / nuit */
+  --chart-5: #497DC4; /* Match chart-5 to primary color */
 
   /* Sidebar */
   --sidebar: #2D2D2D;
   --sidebar-foreground: #FFFFFF;
-  --sidebar-primary: #001F54;
+  --sidebar-primary: #497DC4; /* Match sidebar primary to primary color */
   --sidebar-primary-foreground: #FFFFFF;
   --sidebar-accent: #4B5563;
   --sidebar-accent-foreground: #FFFFFF;
   --sidebar-border: #374151;
-  --sidebar-ring: #001F54;
+  --sidebar-ring: #497DC4; /* Match sidebar ring to primary color */
 }
 
 /* Base styles */

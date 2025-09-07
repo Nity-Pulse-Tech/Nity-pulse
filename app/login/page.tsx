@@ -12,13 +12,12 @@ import { isAxiosError } from '@/utils/errorUtils';
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const [isAdminLogin, setIsAdminLogin] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
 
-  const { login, adminLogin } = useAuth();
+  const { login } = useAuth();
   const router = useRouter();
   const [redirectTo, setRedirectTo] = useState('/');
 
@@ -45,13 +44,8 @@ export default function LoginPage() {
 
     setIsLoading(true);
     try {
-      if (isAdminLogin) {
-        await adminLogin(formData);
-        toast.success('Admin login successful!');
-      } else {
-        await login(formData);
-        toast.success('Login successful!');
-      }
+      await login(formData);
+      toast.success('Login successful!');
       router.push(redirectTo);
     } catch (error: unknown) {
       if (isAxiosError(error)) {
@@ -65,26 +59,26 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-indigo-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="w-full max-w-md"
       >
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-card rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-black dark:text-white mb-2">
               Welcome Back
             </h1>
-            <p className="text-gray-600">
-              Sign in to your {isAdminLogin ? 'admin' : 'user'} account
+            <p className="text-black/60 dark:text-white/60">
+              Sign in to your account
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-black dark:text-white mb-2">
                 Email Address
               </label>
               <Input
@@ -95,12 +89,12 @@ export default function LoginPage() {
                 onChange={handleInputChange}
                 placeholder="Enter your email"
                 required
-                className="w-full"
+                className="w-full bg-card text-black dark:text-white border-border"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-black dark:text-white mb-2">
                 Password
               </label>
               <Input
@@ -111,40 +105,30 @@ export default function LoginPage() {
                 onChange={handleInputChange}
                 placeholder="Enter your password"
                 required
-                className="w-full"
+                className="w-full bg-card text-black dark:text-white border-border"
               />
             </div>
 
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+              className="w-full btn-secondary"
             >
-              {isLoading ? 'Signing in...' : `Sign in as ${isAdminLogin ? 'Admin' : 'User'}`}
+              {isLoading ? 'Signing in...' : 'Sign in'}
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
-            <button
-              onClick={() => setIsAdminLogin(!isAdminLogin)}
-              className="text-sm text-purple-600 hover:text-purple-700 underline"
-            >
-              {isAdminLogin ? 'Sign in as User' : 'Sign in as Admin'}
-            </button>
-          </div>
-
           <div className="mt-8 text-center">
-          <p className="text-sm text-gray-600">
+            <p className="text-sm text-black/60 dark:text-white/60">
               Don&apos;t have an account?{' '}
-
-              <Link href="/register" className="text-purple-600 hover:text-purple-700 font-medium">
+              <Link href="/register" className="text-secondary hover:text-secondary/90 font-medium">
                 Sign up
               </Link>
             </p>
           </div>
 
           <div className="mt-4 text-center">
-            <Link href="/" className="text-sm text-gray-500 hover:text-gray-700">
+            <Link href="/" className="text-sm text-black/60 dark:text-white/60 hover:text-secondary">
               ← Back to Home
             </Link>
           </div>

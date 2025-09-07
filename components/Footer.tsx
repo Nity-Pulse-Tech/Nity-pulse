@@ -45,14 +45,14 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="gradient-primary text-white relative overflow-hidden">
+    <footer className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground relative overflow-hidden">
       <div className="container mx-auto px-6 py-16 relative z-10">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           <div className="lg:col-span-2">
             <h3 className="text-3xl font-bold mb-6">
               Nity Pulse
             </h3>
-            <p className="text-white/90 leading-relaxed mb-6 text-lg max-w-md">
+            <p className="text-primary-foreground/90 leading-relaxed mb-6 text-lg max-w-md">
               Collaborating to create innovative tech and design solutions that empower teams and startups worldwide.
             </p>
             <div className="flex space-x-4">
@@ -63,9 +63,9 @@ const Footer = () => {
                     key={index}
                     href={social.href}
                     aria-label={social.label}
-                    className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center hover:bg-white/20 hover:scale-110 transition-all duration-300 group"
+                    className="w-12 h-12 bg-primary-foreground/10 rounded-xl flex items-center justify-center hover:bg-primary-foreground/20 hover:scale-110 transition-all duration-300 group"
                   >
-                    <IconComponent size={20} className="text-white/90 group-hover:text-white transition-colors" />
+                    <IconComponent size={20} className="text-primary-foreground/90 group-hover:text-primary-foreground transition-colors" />
                   </a>
                 );
               })}
@@ -73,17 +73,17 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="text-xl font-semibold mb-6 text-white">Quick Links</h4>
+            <h4 className="text-xl font-semibold mb-6 text-primary-foreground">Quick Links</h4>
             <ul className="space-y-3">
               {quickLinks.map((link, index) => (
                 <li key={index}>
                   <Link 
                     href={link.href}
-                    className="text-white/90 hover:text-white transition-colors duration-300 hover:translate-x-1 inline-block group"
+                    className="text-primary-foreground/90 hover:text-primary-foreground transition-colors duration-300 hover:translate-x-1 inline-block group"
                   >
                     <span className="relative">
                       {link.label}
-                      <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-white transition-all duration-300 group-hover:w-full"></span>
+                      <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary-foreground transition-all duration-300 group-hover:w-full"></span>
                     </span>
                   </Link>
                 </li>
@@ -92,7 +92,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="text-xl font-semibold mb-6 text-white">Contact Info</h4>
+            <h4 className="text-xl font-semibold mb-6 text-primary-foreground">Contact Info</h4>
             <div className="space-y-4">
               {[
                 { icon: MapPin, text: "Yaoundé, Cameroon" },
@@ -102,8 +102,8 @@ const Footer = () => {
                 const IconComponent = item.icon;
                 return (
                   <div key={index} className="flex items-start space-x-3 group">
-                    <IconComponent size={18} className="text-white/90 mt-0.5 group-hover:text-white transition-colors" />
-                    <span className="text-white/90 group-hover:text-white transition-colors">
+                    <IconComponent size={18} className="text-primary-foreground/90 mt-0.5 group-hover:text-primary-foreground transition-colors" />
+                    <span className="text-primary-foreground/90 group-hover:text-primary-foreground transition-colors">
                       {item.text}
                     </span>
                   </div>
@@ -113,10 +113,10 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-white/20 pt-12 mb-12">
+        <div className="border-t border-primary-foreground/20 pt-12 mb-12">
           <div className="max-w-2xl mx-auto text-center">
-            <h4 className="text-2xl font-bold text-white mb-4">Stay in the Loop</h4>
-            <p className="text-white/90 mb-6">Join our newsletter for the latest tech and design insights.</p>
+            <h4 className="text-2xl font-bold text-primary-foreground mb-4">Stay in the Loop</h4>
+            <p className="text-primary-foreground/90 mb-6">Join our newsletter for the latest tech and design insights.</p>
             <form
               className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto"
               onSubmit={handleSubmit}
@@ -124,19 +124,19 @@ const Footer = () => {
               <Input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-4 py-3 rounded-xl bg-white/10 border-white/20 text-white placeholder-white/60 focus:outline-none focus:border-white/40 transition-colors"
+                className="flex-1 px-4 py-3 rounded-xl bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder-primary-foreground/60 focus:outline-none focus:border-primary-foreground/40 transition-colors"
                 value={footerEmail}
                 onChange={e => setFooterEmail(e.target.value)}
                 disabled={footerLoading}
               />
               <Button 
                 type="submit"
-                className="btn-secondary flex items-center justify-center"
+                className="bg-secondary text-secondary-foreground flex items-center justify-center hover:bg-secondary/90 rounded-xl px-6 py-3 font-semibold transition-all duration-300"
                 disabled={footerLoading}
               >
                 {footerLoading ? (
                   <>
-                    <svg className="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+                    <svg className="animate-spin h-5 w-5 mr-2 text-secondary-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
                     Subscribing...
                   </>
                 ) : (
@@ -147,8 +147,8 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-white/20 pt-8 text-center">
-          <p className="text-white/90 text-lg">
+        <div className="border-t border-primary-foreground/20 pt-8 text-center">
+          <p className="text-primary-foreground/90 text-lg">
             © {currentYear} Nity Pulse. All rights reserved.
           </p>
         </div>

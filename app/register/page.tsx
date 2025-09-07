@@ -65,19 +65,19 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-indigo-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="w-full max-w-md"
       >
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-card rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-black dark:text-white mb-2">
               Create Account
             </h1>
-            <p className="text-gray-600">
+            <p className="text-black/60 dark:text-white/60">
               Join Nity Pulse and start your journey
             </p>
           </div>
@@ -85,7 +85,7 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="first_name" className="block text-sm font-medium text-black dark:text-white mb-2">
                   First Name
                 </label>
                 <Input
@@ -96,11 +96,11 @@ export default function RegisterPage() {
                   onChange={handleInputChange}
                   placeholder="John"
                   required
-                  className="w-full"
+                  className="w-full bg-card text-black dark:text-white border-border"
                 />
               </div>
               <div>
-                <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="last_name" className="block text-sm font-medium text-black dark:text-white mb-2">
                   Last Name
                 </label>
                 <Input
@@ -111,13 +111,13 @@ export default function RegisterPage() {
                   onChange={handleInputChange}
                   placeholder="Doe"
                   required
-                  className="w-full"
+                  className="w-full bg-card text-black dark:text-white border-border"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-black dark:text-white mb-2">
                 Email Address
               </label>
               <Input
@@ -128,12 +128,12 @@ export default function RegisterPage() {
                 onChange={handleInputChange}
                 placeholder="john@example.com"
                 required
-                className="w-full"
+                className="w-full bg-card text-black dark:text-white border-border"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-black dark:text-white mb-2">
                 Password
               </label>
               <Input
@@ -144,12 +144,12 @@ export default function RegisterPage() {
                 onChange={handleInputChange}
                 placeholder="Enter your password"
                 required
-                className="w-full"
+                className="w-full bg-card text-black dark:text-white border-border"
               />
             </div>
 
             <div>
-              <label htmlFor="password_confirm" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="password_confirm" className="block text-sm font-medium text-black dark:text-white mb-2">
                 Confirm Password
               </label>
               <Input
@@ -160,30 +160,30 @@ export default function RegisterPage() {
                 onChange={handleInputChange}
                 placeholder="Confirm your password"
                 required
-                className="w-full"
+                className="w-full bg-card text-black dark:text-white border-border"
               />
             </div>
 
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+              className="w-full btn-secondary"
             >
               {isLoading ? 'Creating Account...' : 'Create Account'}
             </Button>
           </form>
 
           <div className="mt-8 text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-black/60 dark:text-white/60">
               Already have an account?{' '}
-              <Link href="/login" className="text-purple-600 hover:text-purple-700 font-medium">
+              <Link href="/login" className="text-secondary hover:text-secondary/90 font-medium">
                 Sign in
               </Link>
             </p>
           </div>
 
           <div className="mt-4 text-center">
-            <Link href="/" className="text-sm text-gray-500 hover:text-gray-700">
+            <Link href="/" className="text-sm text-black/60 dark:text-white/60 hover:text-secondary">
               ← Back to Home
             </Link>
           </div>
