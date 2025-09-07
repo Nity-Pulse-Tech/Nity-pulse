@@ -6,7 +6,7 @@ import { Mail, Send } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Newsletter = () => {
-  const currentYear = new Date().getFullYear();
+ 
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
 

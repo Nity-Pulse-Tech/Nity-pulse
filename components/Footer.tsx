@@ -1,15 +1,75 @@
 'use client';
+
 import { Facebook, Twitter, Linkedin, Instagram, Mail, Phone, MapPin } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { dashboardService } from '@/lib/services/dashboardService';
+import { isAxiosError } from '@/utils/errorUtils';
+
+interface ContactItem {
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  text: string;
+  key: string;
+}
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const [footerEmail, setFooterEmail] = useState('');
   const [footerLoading, setFooterLoading] = useState(false);
+  const [companyInfo, setCompanyInfo] = useState({
+    office_location: 'Yaoundé, Cameroon',
+    emails: ['contact@nitypulse.com'],
+    phones: ['+33 6 05 50 85 42'],
+    facebook: '',
+    twitter: '',
+    instagram: '',
+    linkedin: '',
+    github: '',
+    company_tagline: '',
+    privacy_policy: '',
+    terms_of_service: '',
+    cookies_policy: '',
+  });
+
+  useEffect(() => {
+    const fetchCompanySettings = async () => {
+      try {
+        const settings = await dashboardService.getCompanySettings();
+        setCompanyInfo({
+          office_location: settings.office_location || 'Yaoundé, Cameroon',
+          emails: settings.emails || ['contact@nitypulse.com'],
+          phones: settings.phones || ['+33 6 05 50 85 42'],
+          facebook: settings.facebook || '',
+          twitter: settings.twitter || '',
+          instagram: settings.instagram || '',
+          linkedin: settings.linkedin || '',
+          github: settings.github || '',
+          company_tagline: settings.company_tagline || '',
+          privacy_policy: settings.privacy_policy || '',
+          terms_of_service: settings.terms_of_service || '',
+          cookies_policy: settings.cookies_policy || '',
+        });
+      } catch (error: unknown) {
+        console.error('Failed to fetch company settings:', error);
+        if (isAxiosError(error)) {
+          if (error.response?.status === 401) {
+            toast.error('Authentication failed. Please log in to update company settings.');
+          } else if (error.response?.status === 404) {
+            toast.info('No company settings found. Using default contact information.');
+          } else {
+            toast.error('Failed to fetch company settings.');
+          }
+        } else {
+          toast.error('Failed to fetch company settings.');
+        }
+      }
+    };
+
+    fetchCompanySettings();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,26 +82,42 @@ const Footer = () => {
       return;
     }
     setFooterLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    toast.success('Thank you for subscribing!');
-    setFooterEmail('');
-    setFooterLoading(false);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      toast.success('Thank you for subscribing!');
+      setFooterEmail('');
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to subscribe. Please try again.');
+    } finally {
+      setFooterLoading(false);
+    }
   };
 
   const socialLinks = [
-    { icon: Facebook, href: "#", label: "Facebook" },
-    { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Linkedin, href: "#", label: "LinkedIn" },
-    { icon: Instagram, href: "#", label: "Instagram" }
+    { icon: Facebook, href: companyInfo.facebook || '#', label: 'Facebook' },
+    { icon: Twitter, href: companyInfo.twitter || '#', label: 'Twitter' },
+    { icon: Linkedin, href: companyInfo.linkedin || '#', label: 'LinkedIn' },
+    { icon: Instagram, href: companyInfo.instagram || '#', label: 'Instagram' },
   ];
 
   const quickLinks = [
-    { label: "Home", href: "/#home" },
-    { label: "About", href: "/about" },
-    { label: "Projects", href: "/#projects" },
-    { label: "Services", href: "/#services" },
-    { label: "Blog", href: "/blog" },
-    { label: "Contact", href: "/#contact" }
+    { label: 'Home', href: '/#home' },
+    { label: 'About', href: '/about' },
+    { label: 'Projects', href: '/#projects' },
+    { label: 'Services', href: '/#services' },
+    { label: 'Blog', href: '/blog' },
+    { label: 'Contact', href: '/#contact' },
+  ];
+
+  const contactItems: ContactItem[] = [
+    { icon: MapPin, text: companyInfo.office_location, key: 'location' },
+    { icon: Mail, text: companyInfo.emails[0] || 'contact@nitypulse.com', key: 'email' },
+    ...companyInfo.phones.map((phone, index) => ({
+      icon: Phone,
+      text: phone || '+33 6 05 50 85 42',
+      key: `phone-${index}`,
+    })),
   ];
 
   return (
@@ -49,9 +125,7 @@ const Footer = () => {
       <div className="container mx-auto px-6 py-16 relative z-10">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           <div className="lg:col-span-2">
-            <h3 className="text-3xl font-bold mb-6">
-              Nity Pulse
-            </h3>
+            <h3 className="text-3xl font-bold mb-6">Nity Pulse</h3>
             <p className="text-primary-foreground/90 leading-relaxed mb-6 text-lg max-w-md">
               Collaborating to create innovative tech and design solutions that empower teams and startups worldwide.
             </p>
@@ -77,7 +151,7 @@ const Footer = () => {
             <ul className="space-y-3">
               {quickLinks.map((link, index) => (
                 <li key={index}>
-                  <Link 
+                  <Link
                     href={link.href}
                     className="text-primary-foreground/90 hover:text-primary-foreground transition-colors duration-300 hover:translate-x-1 inline-block group"
                   >
@@ -94,14 +168,10 @@ const Footer = () => {
           <div>
             <h4 className="text-xl font-semibold mb-6 text-primary-foreground">Contact Info</h4>
             <div className="space-y-4">
-              {[
-                { icon: MapPin, text: "Yaoundé, Cameroon" },
-                { icon: Mail, text: "contact@nitypulse.com" },
-                { icon: Phone, text: "+237 690123456" }
-              ].map((item, index) => {
+              {contactItems.map((item) => {
                 const IconComponent = item.icon;
                 return (
-                  <div key={index} className="flex items-start space-x-3 group">
+                  <div key={item.key} className="flex items-start space-x-3 group">
                     <IconComponent size={18} className="text-primary-foreground/90 mt-0.5 group-hover:text-primary-foreground transition-colors" />
                     <span className="text-primary-foreground/90 group-hover:text-primary-foreground transition-colors">
                       {item.text}
@@ -129,7 +199,7 @@ const Footer = () => {
                 onChange={e => setFooterEmail(e.target.value)}
                 disabled={footerLoading}
               />
-              <Button 
+              <Button
                 type="submit"
                 className="bg-secondary text-secondary-foreground flex items-center justify-center hover:bg-secondary/90 rounded-xl px-6 py-3 font-semibold transition-all duration-300"
                 disabled={footerLoading}

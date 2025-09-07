@@ -16,7 +16,7 @@ export interface Portfolio {
   description: string;
   image?: string;
   link?: string;
-  project_url?: string; // ✅ Add this
+  project_url?: string;
   technologies?: string;
   github_url?: string;
   status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
@@ -25,22 +25,19 @@ export interface Portfolio {
   modified: string;
 }
 
-
-
 export interface Testimonial {
   id: string;
-  author_name: string; // <-- changed from author_name to name, required field
+  author_name: string;
   content: string;
   status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
   user: string;
-  image?: string | null;  // optional
+  image?: string | null;
   position?: string | null;
   company?: string | null;
   rating: number;
   created: string;
   modified: string;
 }
-
 
 export interface ContactMessage {
   id: string;
@@ -77,6 +74,15 @@ export interface UpdateBlogData {
   status?: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
 }
 
+export interface CreatePortfolioData {
+  title: string;
+  description: string;
+  image?: File;
+  link?: string;
+  technologies?: string;
+  github_url?: string;
+  status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+}
 
 export interface UpdatePortfolioData {
   title: string;
@@ -84,9 +90,9 @@ export interface UpdatePortfolioData {
   technologies: string;
   project_url: string;
   github_url: string;
-  status: PortfolioStatus; // 👈 expects EXACTLY one of those three strings
-  image?: File | null;   // add this
-  link?: string; 
+  status: PortfolioStatus;
+  image?: File | null;
+  link?: string;
 }
 
 export interface CreateTestimonialData {
@@ -105,20 +111,25 @@ export interface UpdateTestimonialData {
   image?: File | null;
 }
 
-
-export interface CreatePortfolioData {
-  title: string;
-  description: string;
-  image?: File;
-  link?: string; // Changed from project_url
-  technologies?: string; // Added
-  github_url?: string; // Added
-  status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+export interface CompanySetting {
+  id: string;
+  office_location: string;
+  emails: string[];
+  phones: string[];
+  facebook?: string | null;
+  twitter?: string | null;
+  instagram?: string | null;
+  linkedin?: string | null;
+  github?: string | null;
+  privacy_policy?: string | null;
+  terms_of_service?: string | null;
+  cookies_policy?: string | null;
+  company_tagline?: string | null;
+  created: string;
+  modified: string;
 }
 
-export type PortfolioStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED";
-
-
+export type PortfolioStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
 
 export type APIErrorResponse = {
   message?: string;

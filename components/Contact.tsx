@@ -1,15 +1,72 @@
 'use client';
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { MapPin, Mail, Phone, Send } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import { dashboardService } from '@/lib/services/dashboardService';
 
 const Contact = () => {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [loading, setLoading] = useState(false);
+  const [companyInfo, setCompanyInfo] = useState({
+    office_location: 'Yaoundé, Cameroon',
+    emails: ['contact@nitypulse.com'],
+    phones: ['+237 690123456'],
+    facebook: '',
+    twitter: '',
+    instagram: '',
+    linkedin: '',
+    github: '',
+    company_tagline: '',
+    privacy_policy: '',
+    terms_of_service: '',
+    cookies_policy: '',
+  });
+
+  useEffect(() => {
+    const fetchCompanySettings = async () => {
+      try {
+        const settings = await dashboardService.getCompanySettings();
+        setCompanyInfo({
+          office_location: settings.office_location || 'Yaoundé, Cameroon',
+          emails: settings.emails || ['contact@nitypulse.com'],
+          phones: settings.phones || ['+33 6 05 50 85 42'],
+          facebook: settings.facebook || '',
+          twitter: settings.twitter || '',
+          instagram: settings.instagram || '',
+          linkedin: settings.linkedin || '',
+          github: settings.github || '',
+          company_tagline: settings.company_tagline || '',
+          privacy_policy: settings.privacy_policy || '',
+          terms_of_service: settings.terms_of_service || '',
+          cookies_policy: settings.cookies_policy || '',
+        });
+      } catch (error: unknown) {
+        console.error('Failed to fetch company settings:', error);
+        // Use fallback values if fetch fails
+        setCompanyInfo({
+          office_location: 'Yaoundé, Cameroon',
+          emails: ['contact@nitypulse.com'],
+          phones: ['+33 6 05 50 85 42'],
+          facebook: '',
+          twitter: '',
+          instagram: '',
+          linkedin: '',
+          github: '',
+          company_tagline: '',
+          privacy_policy: '',
+          terms_of_service: '',
+          cookies_policy: '',
+        });
+      }
+    };
+
+    fetchCompanySettings();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -26,10 +83,19 @@ const Contact = () => {
       return;
     }
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1800));
-    toast.success('Your message has been sent! We’ll get back to you soon.');
-    setForm({ name: '', email: '', subject: '', message: '' });
-    setLoading(false);
+    
+    try {
+      // Here you can integrate with your actual contact form submission
+      // For example, using dashboardService or another API
+      await new Promise(resolve => setTimeout(resolve, 1800));
+      toast.success('Your message has been sent! We’ll get back to you soon.');
+      setForm({ name: '', email: '', subject: '', message: '' });
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to send message. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -74,19 +140,19 @@ const Contact = () => {
                 {
                   icon: MapPin,
                   title: "Office Location",
-                  content: "Yaoundé, Cameroon",
+                  content: companyInfo.office_location,
                   gradient: "gradient-primary"
                 },
                 {
                   icon: Mail,
                   title: "Email",
-                  content: "contact@nitypulse.com",
+                  content: companyInfo.emails[0] || "contact@nitypulse.com",
                   gradient: "gradient-secondary"
                 },
                 {
                   icon: Phone,
                   title: "Phone",
-                  content: "+237 690123456",
+                  content: companyInfo.phones[0] || "+237 690123456",
                   gradient: "gradient-primary"
                 }
               ].map((item, index) => {
@@ -153,7 +219,7 @@ const Contact = () => {
                   <Input 
                     type="text" 
                     name="subject"
-                    placeholder="What’s on your mind?"
+                    placeholder="What's on your mind?"
                     className="w-full h-12 px-4 border-2 border-primary/20 rounded-xl focus:border-primary transition-colors text-black dark:text-white placeholder:text-black/60 dark:placeholder:text-white/60"
                     value={form.subject}
                     onChange={handleChange}

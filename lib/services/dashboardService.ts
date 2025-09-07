@@ -9,6 +9,7 @@ import {
   UpdateBlogData,
   UpdatePortfolioData,
   UpdateTestimonialData,
+  CompanySetting,
 } from '../types/dashboard';
 import { AxiosErrorResponse } from '../types/error';
 
@@ -71,13 +72,11 @@ class DashboardService {
 
   async createBlog(data: CreateBlogData): Promise<Blog> {
     try {
-      // Construct FormData from CreateBlogData
       const formData = new FormData();
       formData.append('title', data.title);
       formData.append('content', data.content);
       formData.append('status', data.status);
   
-      // Append image only if it exists and is valid
       if (data.image) {
         if (data.image instanceof File || typeof data.image === 'string') {
           formData.append('image', data.image);
@@ -86,7 +85,6 @@ class DashboardService {
         }
       }
   
-      // Make the POST request with FormData
       const response = await authApi.post<Blog>('/api/core/blog/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -95,7 +93,6 @@ class DashboardService {
   
       return response.data;
     } catch (error: unknown) {
-      // Enhanced error handling
       const errorMessage =
         error instanceof Error
           ? `Failed to create blog: ${error.message}`
@@ -179,6 +176,9 @@ class DashboardService {
         if (data.status) form.append('status', data.status);
         if (data.image) form.append('image', data.image);
         if (data.link) form.append('link', data.link);
+        if (data.technologies) form.append('technologies', data.technologies);
+        if (data.project_url) form.append('project_url', data.project_url);
+        if (data.github_url) form.append('github_url', data.github_url);
         return form;
       })();
   
@@ -195,7 +195,6 @@ class DashboardService {
       throw new Error(errorMessage);
     }
   }
-  
 
   async deletePortfolio(id: string): Promise<void> {
     try {
@@ -301,6 +300,55 @@ class DashboardService {
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to delete contact message';
       throw new Error(errorMessage);
+    }
+  }
+
+  async getCompanySettings(): Promise<CompanySetting> {
+    try {
+      const response = await authApi.get<CompanySetting>('/api/core/setting/');
+      return response.data;
+    } catch (error: unknown) {
+      const err = error as AxiosErrorResponse;
+      const data = err.response?.data;
+      const message = data?.message || 'Failed to fetch company settings';
+      throw new Error(message);
+    }
+  }
+
+  async createOrUpdateCompanySettings(data: FormData | Partial<CompanySetting>): Promise<CompanySetting> {
+    try {
+      const isFormData = data instanceof FormData;
+      const payload = isFormData ? data : (() => {
+        const form = new FormData();
+        if (data.office_location) form.append('office_location', data.office_location);
+        if (data.emails) form.append('emails', JSON.stringify(data.emails));
+        if (data.phones) form.append('phones', JSON.stringify(data.phones));
+        if (data.facebook) form.append('facebook', data.facebook);
+        if (data.twitter) form.append('twitter', data.twitter);
+        if (data.instagram) form.append('instagram', data.instagram);
+        if (data.linkedin) form.append('linkedin', data.linkedin);
+        if (data.github) form.append('github', data.github);
+        if (data.privacy_policy) form.append('privacy_policy', data.privacy_policy);
+        if (data.terms_of_service) form.append('terms_of_service', data.terms_of_service);
+        if (data.cookies_policy) form.append('cookies_policy', data.cookies_policy);
+        if (data.company_tagline) form.append('company_tagline', data.company_tagline);
+        return form;
+      })();
+
+      const response = await authApi.post<CompanySetting>('/api/core/setting/', payload, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    } catch (error: unknown) {
+      const err = error as AxiosErrorResponse;
+      const data = err.response?.data;
+      const fallback = data && Object.values(data)[0];
+      const message =
+        data?.message ||
+        data?.non_field_errors?.[0] ||
+        (Array.isArray(fallback) ? fallback[0] : fallback) ||
+        'Failed to create or update company settings';
+      throw new Error(message);
     }
   }
 }
