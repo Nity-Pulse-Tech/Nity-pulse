@@ -1,4 +1,4 @@
-import { authApi } from '../api';
+import { authApi, publicApi } from '../api';
 import {
   Blog,
   Portfolio,
@@ -305,7 +305,7 @@ class DashboardService {
 
   async getCompanySettings(): Promise<CompanySetting> {
     try {
-      const response = await authApi.get<CompanySetting>('/api/core/setting/');
+      const response = await publicApi.get<CompanySetting>('/api/core/setting/');
       return response.data;
     } catch (error: unknown) {
       const err = error as AxiosErrorResponse;
