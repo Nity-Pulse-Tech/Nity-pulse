@@ -13,6 +13,14 @@ import {
 } from '../types/dashboard';
 import { AxiosErrorResponse } from '../types/error';
 
+interface BlogAgentInput {
+  user_query: string;
+  category: string;
+  language: string;
+  source: string;
+  prompt_version: string;
+}
+
 class DashboardService {
   private static instance: DashboardService;
 
@@ -46,7 +54,7 @@ class DashboardService {
       };
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to fetch dashboard stats';
-      throw new Error(errorMessage);
+      throw new Error(errorMessage as string);
     }
   }
 
@@ -56,7 +64,7 @@ class DashboardService {
       return response.data;
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to fetch blogs';
-      throw new Error(errorMessage);
+      throw new Error(errorMessage as string);
     }
   }
 
@@ -98,6 +106,26 @@ class DashboardService {
           ? `Failed to create blog: ${error.message}`
           : 'Failed to create blog due to an unknown error';
       throw new Error(errorMessage);
+    }
+  }
+
+  async createBlogWithAI(data: BlogAgentInput): Promise<{ message: string; task_id: string }> {
+    try {
+      const response = await authApi.post<{ message: string; task_id: string }>('/blog_agent/api/blog-agent/', data, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        },
+      });
+      return response.data;
+    } catch (error: unknown) {
+      const err = error as AxiosErrorResponse;
+      const data = err.response?.data;
+      const errorMessage =
+        data?.error ||
+        data?.non_field_errors?.[0] ||
+        (data && Object.values(data)[0] && Array.isArray(Object.values(data)[0]) ? Object.values(data)[0] : 'Failed to start blog creation task');
+        throw new Error(errorMessage as string);
     }
   }
 

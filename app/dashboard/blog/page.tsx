@@ -16,8 +16,10 @@ import {
   Eye, 
   FileText,
   Calendar,
-  Filter
+  Filter,
+  Bot
 } from 'lucide-react';
+import CreateBlogAIModal from '@/components/CreateBlogAIModal';
 
 export default function BlogManagementPage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -25,6 +27,7 @@ export default function BlogManagementPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
+  const [isAIModalOpen, setIsAIModalOpen] = useState(false);
 
   useEffect(() => {
     loadBlogs();
@@ -85,6 +88,15 @@ export default function BlogManagementPage() {
     }
   };
 
+  const handleAICreate = async (data: { user_query: string; category: string; language: string; source: string; prompt_version: string }) => {
+    try {
+      await dashboardService.createBlogWithAI(data);
+      loadBlogs(); // Refresh blog list
+    } catch (error: unknown) {
+      throw error; // Let the modal handle the error
+    }
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -127,13 +139,26 @@ export default function BlogManagementPage() {
             Manage your blog posts, create new content, and track their status.
           </p>
         </div>
-        <Link href="/dashboard/blog/create">
-          <Button className="btn-primary">
-            <Plus size={20} className="mr-2" />
-            Create Blog Post
+        <div className="flex gap-4">
+          <Link href="/dashboard/blog/create">
+            <Button className="btn-primary">
+              <Plus size={20} className="mr-2" />
+              Create Blog Post
+            </Button>
+          </Link>
+          <Button className="btn-primary" onClick={() => setIsAIModalOpen(true)}>
+            <Bot size={20} className="mr-2" />
+            Create Blog with AI
           </Button>
-        </Link>
+        </div>
       </div>
+
+      {/* AI Modal */}
+      <CreateBlogAIModal
+        isOpen={isAIModalOpen}
+        onClose={() => setIsAIModalOpen(false)}
+        onSubmit={handleAICreate}
+      />
 
       {/* Filters */}
       <motion.div
@@ -246,9 +271,11 @@ export default function BlogManagementPage() {
                       </div>
                     </div>
 
-                    {blog.image && (
+                    {(blog.image || blog.image_url) && (
                       <div className="mt-2">
-                        <span className="text-xs text-muted-foreground">Has image</span>
+                        <span className="text-xs text-muted-foreground">
+                          {blog.image ? 'Has uploaded image' : 'Has external image'}
+                        </span>
                       </div>
                     )}
                   </div>

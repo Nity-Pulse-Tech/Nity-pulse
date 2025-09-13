@@ -13,6 +13,7 @@ interface BlogPost {
   title: string;
   content: string;
   image?: string;
+  image_url?: string; // Added to match backend
   created: string;
   status: string;
   author: string;
@@ -89,9 +90,9 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
             </div>
           </div>
 
-          {post.image ? (
+          {(post.image || post.image_url) ? (
             <Image
-              src={post.image}
+              src={post.image || post.image_url!} // Prioritize image, then image_url
               alt={post.title}
               width={800}
               height={400}

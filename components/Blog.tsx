@@ -12,6 +12,7 @@ interface BlogPost {
   title: string;
   content: string;
   image?: string;
+  image_url?: string; // Added to match backend
   created: string;
   status: string;
   author: string;
@@ -67,9 +68,9 @@ export default function Blog({ blogs }: BlogProps) {
             >
               <Card className="h-full hover:shadow-lg transition-shadow">
                 <CardHeader className="p-0">
-                <div className="aspect-video relative overflow-hidden rounded-t-lg">
+                  <div className="aspect-video relative overflow-hidden rounded-t-lg">
                     <Image
-                      src={post.image || '/fallback-image.jpg'}
+                      src={post.image || post.image_url || '/fallback-image.jpg'} // Prioritize image, then image_url
                       alt={post.title}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -83,21 +84,13 @@ export default function Blog({ blogs }: BlogProps) {
                     {new Date(post.created).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'long',
-                      day: 'numeric'
+                      day: 'numeric',
                     })}
                   </div>
-                  
-                  <CardTitle className="text-xl mb-3 line-clamp-2">
-                    {post.title}
-                  </CardTitle>
-                  
+                  <CardTitle className="text-xl mb-3 line-clamp-2">{post.title}</CardTitle>
                   <CardDescription className="mb-4 line-clamp-3">
-                    {post.content.length > 150 
-                      ? `${post.content.substring(0, 150)}...` 
-                      : post.content
-                    }
+                    {post.content.length > 150 ? `${post.content.substring(0, 150)}...` : post.content}
                   </CardDescription>
-
                   <Link href={`/blog/${post.id}`}>
                     <Button variant="outline" size="sm" className="w-full">
                       Read More

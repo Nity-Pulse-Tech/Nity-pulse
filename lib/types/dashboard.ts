@@ -3,13 +3,15 @@ export interface Blog {
   title: string;
   slug: string;
   content: string;
-  image?: string;
+  image?: string; // Local image path from backend (ImageField)
+  image_url?: string; // URL for scraped image (URLField)
   status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
   author: string;
   created: string;
   modified: string;
+  category?: string;
+  read_time?: string;
 }
-
 export interface Portfolio {
   id: string;
   title: string;

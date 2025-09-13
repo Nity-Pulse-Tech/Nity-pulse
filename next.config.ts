@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['localhost', 'nitypulse-api.onrender.com'],
+    domains: ['localhost', 'nitypulse-api.onrender.com', 'images.unsplash.com'],
   },
 };
 

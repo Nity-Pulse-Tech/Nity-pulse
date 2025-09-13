@@ -15,6 +15,7 @@ interface BlogPost {
   title: string;
   content: string;
   image?: string;
+  image_url?: string; // Added to match backend
   created: string;
   status: string;
   author: string;
@@ -39,10 +40,10 @@ export default function BlogPage() {
         const initialReactions = response.data.reduce(
           (acc: { [key: string]: { likes: number; loves: number } }, post: BlogPost) => ({
             ...acc,
-            [post.id]: { likes: 0, loves: 0 }
+            [post.id]: { likes: 0, loves: 0 },
           }),
           {}
-        );        
+        );
         setReactions(initialReactions);
       } catch (error: unknown) {
         if (isAxiosError(error)) {
@@ -68,7 +69,7 @@ export default function BlogPage() {
     try {
       await authApi.post('/api/core/like/', {
         blog: postId,
-        reaction_type: type.toUpperCase()
+        reaction_type: type.toUpperCase(),
       });
 
       setReactions((prev) => ({
@@ -154,7 +155,7 @@ export default function BlogPage() {
                     <CardHeader className="p-0">
                       <div className="relative overflow-hidden rounded-t-lg">
                         <Image
-                           src={post.image || '/fallback-image.jpg'}
+                          src={post.image || post.image_url || '/fallback-image.jpg'} // Prioritize image, then image_url
                           alt={post.title}
                           width={600}
                           height={400}
@@ -242,8 +243,6 @@ export default function BlogPage() {
           <p className="text-xl text-white/90 max-w-3xl mx-auto mb-8">
             Share your ideas with us and let&apos;s create something extraordinary together.
           </p>
-
-
           <Link href="/#contact">
             <Button size="lg" className="btn-secondary">
               Get in Touch
