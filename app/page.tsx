@@ -10,6 +10,7 @@ import Testimonials from '@/components/Testimonials';
 import Blog from '@/components/Blog';
 import Contact from '@/components/Contact';
 import WhatsAppCommunity from '@/components/WhatsAppCommunity';
+import Partners from '@/components/Partners'
 // import Footer from '@/components/Footer';
 import { publicApi } from '@/lib/api';
 import type { Portfolio, Testimonial as TestimonialType } from '@/lib/types/dashboard';
@@ -69,6 +70,7 @@ export default function HomePage() {
     <div className="min-h-screen">
       <Header />
       <Hero />
+      <Partners />
       <About />
       <Services />
       <Projects portfolios={portfolios} />

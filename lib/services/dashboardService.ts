@@ -1,4 +1,4 @@
-import { authApi, publicApi } from '../api';
+import { publicApi, authApi } from '../api';
 import {
   Blog,
   Portfolio,
@@ -10,6 +10,7 @@ import {
   UpdatePortfolioData,
   UpdateTestimonialData,
   CompanySetting,
+  Partner,
 } from '../types/dashboard';
 import { AxiosErrorResponse } from '../types/error';
 
@@ -35,11 +36,12 @@ class DashboardService {
 
   async getDashboardStats(): Promise<DashboardStats> {
     try {
-      const [blogs, portfolios, testimonials, messages] = await Promise.all([
+      const [blogs, portfolios, testimonials, messages, partners] = await Promise.all([
         this.getAllBlogs(),
         this.getAllPortfolios(),
         this.getAllTestimonials(),
         this.getAllContactMessages(),
+        this.getAllPartners(),
       ]);
 
       return {
@@ -48,6 +50,7 @@ class DashboardService {
         totalPortfolios: portfolios.length,
         totalTestimonials: testimonials.length,
         totalMessages: messages.length,
+        totalPartners: partners.length,
         publishedBlogs: blogs.filter(blog => blog.status === 'PUBLISHED').length,
         publishedPortfolios: portfolios.filter(portfolio => portfolio.status === 'PUBLISHED').length,
         publishedTestimonials: testimonials.filter(testimonial => testimonial.status === 'PUBLISHED').length,
@@ -58,13 +61,33 @@ class DashboardService {
     }
   }
 
+  async getAllPartners(): Promise<Partner[]> {
+    try {
+      const response = await publicApi.get<Partner[]>('/api/core/partner/');
+      return response.data;
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch partners';
+      throw new Error(errorMessage);
+    }
+  }
+
+  async getPartner(id: string): Promise<Partner> {
+    try {
+      const response = await publicApi.get<Partner>(`/api/core/partner/${id}/`);
+      return response.data;
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch partner';
+      throw new Error(errorMessage);
+    }
+  }
+
   async getAllBlogs(): Promise<Blog[]> {
     try {
       const response = await authApi.get<Blog[]>('/api/core/blog/');
       return response.data;
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to fetch blogs';
-      throw new Error(errorMessage as string);
+      throw new Error(errorMessage);
     }
   }
 

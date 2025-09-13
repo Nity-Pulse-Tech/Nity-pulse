@@ -3,8 +3,8 @@ export interface Blog {
   title: string;
   slug: string;
   content: string;
-  image?: string; // Local image path from backend (ImageField)
-  image_url?: string; // URL for scraped image (URLField)
+  image?: string;
+  image_url?: string;
   status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
   author: string;
   created: string;
@@ -12,6 +12,7 @@ export interface Blog {
   category?: string;
   read_time?: string;
 }
+
 export interface Portfolio {
   id: string;
   title: string;
@@ -51,12 +52,21 @@ export interface ContactMessage {
   modified: string;
 }
 
+export interface Partner {
+  id: string;
+  name: string;
+  image: string;
+  created: string;
+  modified: string;
+}
+
 export interface DashboardStats {
   totalUsers: number;
   totalBlogs: number;
   totalPortfolios: number;
   totalTestimonials: number;
   totalMessages: number;
+  totalPartners: number;
   publishedBlogs: number;
   publishedPortfolios: number;
   publishedTestimonials: number;
