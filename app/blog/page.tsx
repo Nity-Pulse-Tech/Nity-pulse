@@ -12,14 +12,12 @@ import { isAxiosError } from '@/utils/errorUtils';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import { useRouter } from 'next/navigation';
 
-
-
 interface BlogPost {
   id: string;
   title: string;
   content: string;
   image?: string;
-  image_url?: string; // Added to match backend
+  image_url?: string;
   created: string;
   status: string;
   author: string;
@@ -27,10 +25,16 @@ interface BlogPost {
   read_time?: string;
 }
 
+interface Reaction {
+  likes: number;
+  loves: number;
+  user_reaction: 'LIKE' | 'LOVE' | null;
+}
+
 export default function BlogPage() {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [reactions, setReactions] = useState<{ [key: string]: { likes: number; loves: number } }>({});
+  const [reactions, setReactions] = useState<{ [key: string]: Reaction }>({});
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
 
@@ -38,23 +42,28 @@ export default function BlogPage() {
     const token = localStorage.getItem('access_token');
     setIsAuthenticated(!!token);
 
-    const fetchBlogs = async () => {
+    const fetchBlogsAndReactions = async () => {
       try {
-        const response = await publicApi.get('/api/core/blog/');
-        setBlogs(response.data);
-        const initialReactions = response.data.reduce(
-          (acc: { [key: string]: { likes: number; loves: number } }, post: BlogPost) => ({
+        const [blogsResponse, ...reactionsResponses] = await Promise.all([
+          publicApi.get('/api/core/blog/'),
+          ...blogs.map(post => authApi.get(`/api/core/blog/${post.id}/reactions/`))
+        ]);
+
+        setBlogs(blogsResponse.data);
+
+        const initialReactions = blogsResponse.data.reduce(
+          (acc: { [key: string]: Reaction }, post: BlogPost, index: number) => ({
             ...acc,
-            [post.id]: { likes: 0, loves: 0 },
+            [post.id]: reactionsResponses[index]?.data || { likes: 0, loves: 0, user_reaction: null }
           }),
           {}
         );
         setReactions(initialReactions);
       } catch (error: unknown) {
         if (isAxiosError(error)) {
-          console.error('Error fetching blogs:', error.message);
+          console.error('Error fetching blogs or reactions:', error.message);
         } else {
-          console.error('Unknown error fetching blogs:', error);
+          console.error('Unknown error:', error);
         }
         setBlogs([]);
       } finally {
@@ -62,7 +71,7 @@ export default function BlogPage() {
       }
     };
 
-    fetchBlogs();
+    fetchBlogsAndReactions();
   }, []);
 
   const handleReaction = async (postId: string, type: 'like' | 'love') => {
@@ -70,42 +79,45 @@ export default function BlogPage() {
       router.push('/login');
       return;
     }
-  
+
     try {
-      await authApi.post('/api/core/like/', {
+      const response = await authApi.post('/api/core/like/', {
         blog: postId,
         reaction_type: type.toUpperCase(),
       });
-  
-      setReactions((prev) => ({
-        ...prev,
-        [postId]: {
-          ...prev[postId],
-          [type === 'like' ? 'likes' : 'loves']: prev[postId][type === 'like' ? 'likes' : 'loves'] + 1,
-        },
-      }));
+
+      setReactions((prev) => {
+        const currentReaction = prev[postId].user_reaction;
+        const newReaction = response.data.message === 'Reaction removed' ? null : type.toUpperCase() as 'LIKE' | 'LOVE' | null;
+
+        return {
+          ...prev,
+          [postId]: {
+            likes: newReaction === 'LIKE' ? prev[postId].likes + 1 : 
+                   currentReaction === 'LIKE' ? prev[postId].likes - 1 : prev[postId].likes,
+            loves: newReaction === 'LOVE' ? prev[postId].loves + 1 : 
+                   currentReaction === 'LOVE' ? prev[postId].loves - 1 : prev[postId].loves,
+            user_reaction: newReaction,
+          },
+        };
+      });
     } catch (error: unknown) {
       if (isAxiosError(error)) {
         console.error('Error sending reaction:', error.message);
         if (error.response?.status === 401) {
-          if (typeof window !== 'undefined') {
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
-            localStorage.removeItem('user');
-            router.push('/login');
-          }
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          localStorage.removeItem('user');
+          router.push('/login');
         }
       } else {
         console.error('Unknown error sending reaction:', error);
       }
     }
   };
-  
 
   if (isLoading) {
-    return (
-      <LoadingSpinner />
-    );
+    return <LoadingSpinner />;
   }
 
   return (
@@ -158,7 +170,7 @@ export default function BlogPage() {
                     <CardHeader className="p-0">
                       <div className="relative overflow-hidden rounded-t-lg">
                         <Image
-                          src={post.image || post.image_url || '/fallback-image.jpg'} // Prioritize image, then image_url
+                          src={post.image || post.image_url || '/fallback-image.jpg'}
                           alt={post.title}
                           width={600}
                           height={400}
@@ -201,8 +213,9 @@ export default function BlogPage() {
                             size="sm"
                             onClick={() => handleReaction(post.id, 'like')}
                             title={!isAuthenticated ? 'Login to like' : 'Like this post'}
+                            className={reactions[post.id]?.user_reaction === 'LIKE' ? 'text-blue-500 dark:text-blue-400' : 'text-black/60 dark:text-white/60'}
                           >
-                            <ThumbsUp size={16} className="mr-1 text-black/60 dark:text-white/60" />
+                            <ThumbsUp size={16} className="mr-1" />
                             {reactions[post.id]?.likes || 0}
                           </Button>
                           <Button
@@ -210,8 +223,9 @@ export default function BlogPage() {
                             size="sm"
                             onClick={() => handleReaction(post.id, 'love')}
                             title={!isAuthenticated ? 'Login to love' : 'Love this post'}
+                            className={reactions[post.id]?.user_reaction === 'LOVE' ? 'text-red-500 dark:text-red-400' : 'text-black/60 dark:text-white/60'}
                           >
-                            <Heart size={16} className="mr-1 text-black/60 dark:text-white/60" />
+                            <Heart size={16} className="mr-1" />
                             {reactions[post.id]?.loves || 0}
                           </Button>
                         </div>
