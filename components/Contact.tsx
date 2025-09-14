@@ -152,7 +152,7 @@ const Contact = () => {
                 {
                   icon: Phone,
                   title: "Phone",
-                  content: companyInfo.phones[0] || "+237 690123456",
+                  content: companyInfo.phones[0] || "+33 6 05 50 85 42",
                   gradient: "gradient-primary"
                 }
               ].map((item, index) => {
