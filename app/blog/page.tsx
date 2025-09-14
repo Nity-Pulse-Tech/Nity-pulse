@@ -9,6 +9,10 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { publicApi, authApi } from '@/lib/api';
 import { isAxiosError } from '@/utils/errorUtils';
+import LoadingSpinner from '@/components/common/LoadingSpinner';
+import { useRouter } from 'next/navigation';
+
+
 
 interface BlogPost {
   id: string;
@@ -28,6 +32,7 @@ export default function BlogPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [reactions, setReactions] = useState<{ [key: string]: { likes: number; loves: number } }>({});
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -62,16 +67,16 @@ export default function BlogPage() {
 
   const handleReaction = async (postId: string, type: 'like' | 'love') => {
     if (!isAuthenticated) {
-      window.location.href = '/login';
+      router.push('/login');
       return;
     }
-
+  
     try {
       await authApi.post('/api/core/like/', {
         blog: postId,
         reaction_type: type.toUpperCase(),
       });
-
+  
       setReactions((prev) => ({
         ...prev,
         [postId]: {
@@ -83,25 +88,23 @@ export default function BlogPage() {
       if (isAxiosError(error)) {
         console.error('Error sending reaction:', error.message);
         if (error.response?.status === 401) {
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
-          localStorage.removeItem('user');
-          window.location.href = '/login';
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('user');
+            router.push('/login');
+          }
         }
       } else {
         console.error('Unknown error sending reaction:', error);
       }
     }
   };
+  
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading blogs...</p>
-        </div>
-      </div>
+      <LoadingSpinner />
     );
   }
 

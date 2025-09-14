@@ -1,6 +1,5 @@
 'use client';
-
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, LoginCredentials, RegisterData } from '../types/auth';
 import { authService } from '../services/authService';
 
@@ -35,12 +34,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (currentUser) {
           setUser(currentUser);
         } else {
-          // Try to get fresh user data
           try {
             const profile = await authService.getProfile();
             setUser(profile);
-          } catch  {
-            // If profile fetch fails, logout
+          } catch {
             authService.logout();
             setUser(null);
           }
@@ -60,6 +57,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await authService.login(credentials);
       setUser(response.user);
+      await checkAuth(); // Ensure state is updated after login
     } catch (error) {
       throw error;
     }
@@ -69,6 +67,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await authService.adminLogin(credentials);
       setUser(response.user);
+      await checkAuth(); // Ensure state is updated after admin login
     } catch (error) {
       throw error;
     }
@@ -112,4 +111,4 @@ export const useAuth = (): AuthContextType => {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-}; 
+};
