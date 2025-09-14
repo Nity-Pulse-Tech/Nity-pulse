@@ -274,13 +274,13 @@ export default function BlogPostClient({ post }: BlogPostClientProps) {
     >
       <div className="container mx-auto px-6 max-w-3xl">
         <motion.div
-          className="mb-12"
+          className="mb-12 mt-10"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <Link href="/blog" className="text-blue-600 dark:text-blue-400 hover:underline text-base font-medium">
+          <Link href="/blog" className="text-blue-600 mt-20 dark:text-blue-400 hover:underline text-base font-medium">
             ← Back to Blog
           </Link>
           <h1 className="text-3xl md:text-4xl font-bold mt-4 mb-6 text-gray-900 dark:text-white">{post.title}</h1>

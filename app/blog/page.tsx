@@ -44,21 +44,28 @@ export default function BlogPage() {
 
     const fetchBlogsAndReactions = async () => {
       try {
-        const [blogsResponse, ...reactionsResponses] = await Promise.all([
-          publicApi.get('/api/core/blog/'),
-          ...blogs.map(post => authApi.get(`/api/core/blog/${post.id}/reactions/`))
-        ]);
+        // Fetch blogs
+        const blogsResponse = await publicApi.get('/api/core/blog/');
+        const blogData = blogsResponse.data;
+        setBlogs(blogData);
 
-        setBlogs(blogsResponse.data);
+        // Fetch reactions for each blog post
+        const reactionsPromises = blogData.map((post: BlogPost) =>
+          authApi.get(`/api/core/blog/${post.id}/reactions/`).catch(() => ({
+            data: { likes: 0, loves: 0, user_reaction: null },
+          }))
+        );
+        const reactionsResponses = await Promise.all(reactionsPromises);
 
-        const initialReactions = blogsResponse.data.reduce(
+        // Set reactions state
+        const reactionsData = blogData.reduce(
           (acc: { [key: string]: Reaction }, post: BlogPost, index: number) => ({
             ...acc,
-            [post.id]: reactionsResponses[index]?.data || { likes: 0, loves: 0, user_reaction: null }
+            [post.id]: reactionsResponses[index].data,
           }),
           {}
         );
-        setReactions(initialReactions);
+        setReactions(reactionsData);
       } catch (error: unknown) {
         if (isAxiosError(error)) {
           console.error('Error fetching blogs or reactions:', error.message);
@@ -72,6 +79,27 @@ export default function BlogPage() {
     };
 
     fetchBlogsAndReactions();
+
+    // Listen for logout (token removal)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'access_token' && !e.newValue) {
+        setReactions((prev) =>
+          Object.keys(prev).reduce(
+            (acc, postId) => ({
+              ...acc,
+              [postId]: { ...prev[postId], user_reaction: null },
+            }),
+            {}
+          )
+        );
+        setIsAuthenticated(false);
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const handleReaction = async (postId: string, type: 'like' | 'love') => {
@@ -88,15 +116,27 @@ export default function BlogPage() {
 
       setReactions((prev) => {
         const currentReaction = prev[postId].user_reaction;
-        const newReaction = response.data.message === 'Reaction removed' ? null : type.toUpperCase() as 'LIKE' | 'LOVE' | null;
+        const newReaction = response.data.message === 'Reaction removed' ? null : type.toUpperCase() as 'LIKE' | 'LOVE';
 
         return {
           ...prev,
           [postId]: {
-            likes: newReaction === 'LIKE' ? prev[postId].likes + 1 : 
-                   currentReaction === 'LIKE' ? prev[postId].likes - 1 : prev[postId].likes,
-            loves: newReaction === 'LOVE' ? prev[postId].loves + 1 : 
-                   currentReaction === 'LOVE' ? prev[postId].loves - 1 : prev[postId].loves,
+            likes:
+              newReaction === 'LIKE'
+                ? prev[postId].likes + 1
+                : currentReaction === 'LIKE'
+                ? prev[postId].likes - 1
+                : currentReaction === 'LOVE' && type === 'like'
+                ? prev[postId].likes + 1
+                : prev[postId].likes,
+            loves:
+              newReaction === 'LOVE'
+                ? prev[postId].loves + 1
+                : currentReaction === 'LOVE'
+                ? prev[postId].loves - 1
+                : currentReaction === 'LIKE' && type === 'love'
+                ? prev[postId].loves + 1
+                : prev[postId].loves,
             user_reaction: newReaction,
           },
         };
@@ -108,6 +148,7 @@ export default function BlogPage() {
           localStorage.removeItem('access_token');
           localStorage.removeItem('refresh_token');
           localStorage.removeItem('user');
+          setIsAuthenticated(false);
           router.push('/login');
         }
       } else {
@@ -136,15 +177,15 @@ export default function BlogPage() {
         transition={{ duration: 0.6 }}
       >
         <div className="container mx-auto px-6 text-center relative z-10">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 text-white">Nity Pulse Insights</h1>
-          <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">Nity Pulse Insights</h1>
+          <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto">
             Explore the latest trends, tech innovations, and collaborative stories shaping the future.
           </p>
         </div>
       </motion.section>
 
       <motion.section
-        className="py-20 bg-background"
+        className="py-16 bg-background"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
@@ -153,8 +194,8 @@ export default function BlogPage() {
         <div className="container mx-auto px-6">
           {blogs.length === 0 ? (
             <div className="text-center py-20">
-              <h3 className="text-2xl font-bold mb-4 text-gray-600">No blogs available</h3>
-              <p className="text-gray-500">Check back later for new content!</p>
+              <h3 className="text-xl font-bold mb-4 text-muted-foreground">No blogs available</h3>
+              <p className="text-muted-foreground">Check back later for new content!</p>
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
@@ -184,26 +225,26 @@ export default function BlogPage() {
                       </div>
                     </CardHeader>
                     <CardContent className="p-6">
-                      <div className="flex items-center text-sm text-black/60 dark:text-white/60 mb-3 space-x-4">
+                      <div className="flex items-center text-sm text-muted-foreground mb-3 space-x-4">
                         <div className="flex items-center">
-                          <Calendar size={14} className="mr-1 text-black/60 dark:text-white/60" />
+                          <Calendar size={14} className="mr-1 text-muted-foreground" />
                           {new Date(post.created).toLocaleDateString()}
                         </div>
                         <div className="flex items-center">
-                          <Clock size={14} className="mr-1 text-black/60 dark:text-white/60" />
+                          <Clock size={14} className="mr-1 text-muted-foreground" />
                           {post.read_time || '5 min read'}
                         </div>
                       </div>
-                      <h3 className="text-xl font-bold mb-3 text-black dark:text-white group-hover:text-primary transition-colors">
+                      <h3 className="text-lg font-bold mb-3 text-black dark:text-white group-hover:text-primary transition-colors">
                         {post.title}
                       </h3>
-                      <p className="text-black/60 dark:text-white/60 mb-4 line-clamp-3">
+                      <p className="text-muted-foreground mb-4 text-sm line-clamp-3">
                         {post.content.length > 150 ? `${post.content.substring(0, 150)}...` : post.content}
                       </p>
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center">
-                          <User size={16} className="mr-2 text-black/60 dark:text-white/60" />
-                          <span className="text-sm text-black/60 dark:text-white/60">
+                          <User size={16} className="mr-2 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">
                             {post.author || 'Nity Pulse'}
                           </span>
                         </div>
@@ -213,7 +254,12 @@ export default function BlogPage() {
                             size="sm"
                             onClick={() => handleReaction(post.id, 'like')}
                             title={!isAuthenticated ? 'Login to like' : 'Like this post'}
-                            className={reactions[post.id]?.user_reaction === 'LIKE' ? 'text-blue-500 dark:text-blue-400' : 'text-black/60 dark:text-white/60'}
+                            className={`${
+                              reactions[post.id]?.user_reaction === 'LIKE'
+                                ? 'text-primary bg-muted'
+                                : 'text-muted-foreground'
+                            } hover:text-primary hover:bg-muted disabled:opacity-50`}
+                            disabled={reactions[post.id]?.user_reaction === 'LOVE'}
                           >
                             <ThumbsUp size={16} className="mr-1" />
                             {reactions[post.id]?.likes || 0}
@@ -223,7 +269,12 @@ export default function BlogPage() {
                             size="sm"
                             onClick={() => handleReaction(post.id, 'love')}
                             title={!isAuthenticated ? 'Login to love' : 'Love this post'}
-                            className={reactions[post.id]?.user_reaction === 'LOVE' ? 'text-red-500 dark:text-red-400' : 'text-black/60 dark:text-white/60'}
+                            className={`${
+                              reactions[post.id]?.user_reaction === 'LOVE'
+                                ? 'text-secondary bg-muted'
+                                : 'text-muted-foreground'
+                            } hover:text-secondary hover:bg-muted disabled:opacity-50`}
+                            disabled={reactions[post.id]?.user_reaction === 'LIKE'}
                           >
                             <Heart size={16} className="mr-1" />
                             {reactions[post.id]?.loves || 0}
@@ -233,10 +284,10 @@ export default function BlogPage() {
                       <Link href={`/blog/${post.id}`}>
                         <Button
                           variant="outline"
-                          className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+                          className="w-full text-primary border-primary hover:bg-primary hover:text-primary-foreground transition-colors text-sm"
                         >
                           Read More
-                          <ArrowRight size={16} className="ml-2 text-black/60 dark:text-white/60" />
+                          <ArrowRight size={16} className="ml-2" />
                         </Button>
                       </Link>
                     </CardContent>
@@ -249,15 +300,15 @@ export default function BlogPage() {
       </motion.section>
 
       <motion.section
-        className="py-20 gradient-primary text-primary-foreground"
+        className="py-16 gradient-primary text-primary-foreground"
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
       >
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Want to Collaborate?</h2>
-          <p className="text-xl text-white/90 max-w-3xl mx-auto mb-8">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">Want to Collaborate?</h2>
+          <p className="text-lg text-white/90 max-w-3xl mx-auto mb-8">
             Share your ideas with us and let&apos;s create something extraordinary together.
           </p>
           <Link href="/#contact">
