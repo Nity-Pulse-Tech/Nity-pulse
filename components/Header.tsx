@@ -29,17 +29,17 @@ const Header = () => {
     setIsMenuOpen(false);
   };
 
-  // Sidebar animation variants with explicit Easing type
+  // Sidebar animation variants
   const sidebarVariants: Variants = {
     open: {
       x: 0,
       opacity: 1,
-      transition: { duration: 0.3, ease: 'easeInOut' as const },
+      transition: { duration: 0.3, ease: 'easeInOut' },
     },
     closed: {
       x: '-100%',
       opacity: 0,
-      transition: { duration: 0.3, ease: 'easeInOut' as const },
+      transition: { duration: 0.3, ease: 'easeInOut' },
     },
   };
 
@@ -49,43 +49,39 @@ const Header = () => {
     closed: { opacity: 0, transition: { duration: 0.3 } },
   };
 
-  // Determine if a link is active
+  // Check if a link is active
   const isLinkActive = (href: string) => {
-    // For Home link, active on '/' or '/#home'
+    const hash = typeof window !== 'undefined' ? window.location.hash : '';
     if (href === '/#home') {
-      // Only access window.location.hash if running in the browser
-      const hash = typeof window !== 'undefined' ? window.location.hash : '';
       return pathname === '/' || pathname + hash === '/#home';
     }
-    // For other links, check exact pathname or hash match
-    const hash = typeof window !== 'undefined' ? window.location.hash : '';
     return pathname === href || (href.includes('#') && pathname === '/' && pathname + hash === href);
   };
 
   return (
     <motion.header
-      className="fixed top-0 left-0 w-full bg-background z-50 shadow-md"
+      className="fixed top-0 left-0 w-full bg-background shadow-md z-50"
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
     >
       <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center h-12 mt-2">
-          {/* Light theme logo */}
+        <Link href="/" className="flex items-center h-12">
           <Image
             src="/logo_sans_fond.png"
-            alt="Nity Pulse Logo Dark"
+            alt="Nity Pulse Logo"
             width={120}
             height={100}
-            className="max-h-40 w-auto block dark:hidden object-contain"
+            className="max-h-40 w-auto object-contain dark:hidden"
+            priority
           />
-          {/* Dark theme logo */}
           <Image
             src="/logo_sans_fond.png"
-            alt="Nity Pulse Logo Light"
+            alt="Nity Pulse Logo"
             width={120}
-            height={120}
-            className="max-h-40 w-auto hidden dark:block object-contain"
+            height={100}
+            className="max-h-40 w-auto object-contain hidden dark:block"
+            priority
           />
         </Link>
 
@@ -94,7 +90,7 @@ const Header = () => {
             <Link
               key={item.href}
               href={item.href}
-              className={`text-black dark:text-white hover:text-primary transition-colors ${
+              className={`text-base font-medium text-gray-900 dark:text-gray-100 hover:text-primary transition-colors ${
                 isLinkActive(item.href) ? 'text-primary font-semibold border-b-2 border-primary' : ''
               }`}
             >
@@ -110,14 +106,14 @@ const Header = () => {
                   pathname === '/dashboard' ? 'bg-primary text-white' : ''
                 }`}
               >
-                <Settings size={16} className="mr-2" />
+                <Settings className="w-4 h-4 mr-2" />
                 Dashboard
               </Button>
             </Link>
           )}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
             {isAuthenticated ? (
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-3">
                 <span className="text-sm text-gray-600 dark:text-gray-400">
                   Hi, {user?.first_name}
                 </span>
@@ -127,15 +123,15 @@ const Header = () => {
                   onClick={handleLogout}
                   className="text-red-600 hover:text-red-700 hover:bg-red-50"
                 >
-                  <LogOut size={16} className="mr-1" />
+                  <LogOut className="w-4 h-4 mr-1" />
                   Logout
                 </Button>
               </div>
             ) : (
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-3">
                 <Link href="/login">
                   <Button variant="ghost" size="sm">
-                    <User size={16} className="mr-1" />
+                    <User className="w-4 h-4 mr-1" />
                     Login
                   </Button>
                 </Link>
@@ -150,35 +146,34 @@ const Header = () => {
                 </Link>
               </div>
             )}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-gray-900 dark:text-gray-100 hover:text-primary"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </Button>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-black dark:text-white hover:text-primary"
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            aria-label="Toggle theme"
-          >
-            {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-          </Button>
         </nav>
 
         <Button
           variant="ghost"
           size="icon"
-          className="lg:hidden text-black dark:text-white hover:text-primary"
+          className="lg:hidden text-gray-900 dark:text-gray-100 hover:text-primary"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           aria-label="Toggle menu"
         >
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </Button>
       </div>
 
       <AnimatePresence>
         {isMenuOpen && (
           <>
-            {/* Overlay */}
             <motion.div
-              className="fixed inset-0 bg-black z-40 lg:hidden"
+              className="fixed inset-0 bg-black/50 z-40 lg:hidden"
               initial="closed"
               animate="open"
               exit="closed"
@@ -186,7 +181,6 @@ const Header = () => {
               onClick={() => setIsMenuOpen(false)}
             />
 
-            {/* Sidebar */}
             <motion.nav
               className="fixed top-0 left-0 h-full w-64 bg-background border-r border-border z-50 lg:hidden"
               initial="closed"
@@ -196,23 +190,23 @@ const Header = () => {
             >
               <div className="px-6 py-4 flex flex-col space-y-4 h-full">
                 <div className="flex justify-between items-center mb-4">
-                  <span className="text-lg font-semibold text-black dark:text-white">
+                  <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                     Menu
                   </span>
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => setIsMenuOpen(false)}
-                    className="text-black dark:text-white hover:text-primary"
+                    className="text-gray-900 dark:text-gray-100 hover:text-primary"
                   >
-                    <X size={24} />
+                    <X className="w-6 h-6" />
                   </Button>
                 </div>
                 {navItems.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`text-black dark:text-white hover:text-primary transition-colors text-lg ${
+                    className={`text-lg font-medium text-gray-900 dark:text-gray-100 hover:text-primary transition-colors ${
                       isLinkActive(item.href) ? 'text-primary font-semibold border-l-4 border-primary pl-2' : ''
                     }`}
                     onClick={() => setIsMenuOpen(false)}
@@ -223,12 +217,12 @@ const Header = () => {
                 {isAuthenticated && user?.is_admin && (
                   <Link
                     href="/dashboard"
-                    className={`text-black dark:text-white hover:text-primary transition-colors flex items-center text-lg ${
+                    className={`text-lg font-medium text-gray-900 dark:text-gray-100 hover:text-primary transition-colors flex items-center ${
                       pathname === '/dashboard' ? 'text-primary font-semibold border-l-4 border-primary pl-2' : ''
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <Settings size={16} className="mr-2" />
+                    <Settings className="w-4 h-4 mr-2" />
                     Dashboard
                   </Link>
                 )}
@@ -244,7 +238,7 @@ const Header = () => {
                         onClick={handleLogout}
                         className="text-red-600 hover:text-red-700 hover:bg-red-50 w-full justify-start"
                       >
-                        <LogOut size={16} className="mr-2" />
+                        <LogOut className="w-4 h-4 mr-2" />
                         Logout
                       </Button>
                     </div>
@@ -254,9 +248,9 @@ const Header = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="w-full justify-start"
+                          className="w-full justify-start text-gray-900 dark:text-gray-100 hover:text-primary"
                         >
-                          <User size={16} className="mr-2" />
+                          <User className="w-4 h-4 mr-2" />
                           Login
                         </Button>
                       </Link>
@@ -272,17 +266,15 @@ const Header = () => {
                     </div>
                   )}
                 </div>
-                <div className="flex space-x-4">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-black dark:text-white hover:text-primary"
-                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                    aria-label="Toggle theme"
-                  >
-                    {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-                  </Button>
-                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-gray-900 dark:text-gray-100 hover:text-primary"
+                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                  aria-label="Toggle theme"
+                >
+                  {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                </Button>
               </div>
             </motion.nav>
           </>

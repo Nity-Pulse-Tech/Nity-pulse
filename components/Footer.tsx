@@ -217,10 +217,24 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-primary-foreground/20 pt-8 text-center">
-          <p className="text-primary-foreground/90 text-lg">
+        <div className="border-t border-primary-foreground/20 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-primary-foreground/90 text-lg text-center md:text-left">
             © {currentYear} Nity Pulse. All rights reserved.
           </p>
+          <div className="flex space-x-6">
+            <Link 
+              href="/privacy" 
+              className="text-primary-foreground/80 hover:text-primary-foreground transition-colors text-sm font-medium"
+            >
+              Privacy Policy
+            </Link>
+            <Link 
+              href="/terms" 
+              className="text-primary-foreground/80 hover:text-primary-foreground transition-colors text-sm font-medium"
+            >
+              Terms of Service
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
